@@ -1,0 +1,4 @@
+"L:\CLion 2020.1.2\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" L:\The-Chess-of-Yggdrasill
+-- Configuring done
+-- Generating done
+-- Build files have been written to: L:/The-Chess-of-Yggdrasill/cmake-build-debug
