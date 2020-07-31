@@ -25,14 +25,11 @@ chessboard::chessboard() {
     // D7,E8设置为青叶
     board[6][3].chessType = -1;
     board[6][5].chessType = -1;
+    num_Gray=2;
+    num_Green=2;
 }
 
 chessboard::~chessboard(){
-
-}
-
-void chessboard::setup() {
-
 
 }
 
@@ -86,12 +83,14 @@ bool chessboard::step(int x, int y, int chessType) {
         else
             num_Green++;
         board[x][y].chessType=chessType;
+        movedChess.push(point{x,y});
         //QString s=QString("成功落下的位置为（%1，%2），棋子为%3").arg(x).arg(y).arg(board[x][y].chessType);
         //QMessageBox::information(NULL,"",s);
         push(x - 1, y, 'w', camp);
         push(x + 1, y, 's', camp);
         push(x, y - 1, 'a', camp);
         push(x, y + 1, 'd', camp);
+        offset();
         return true;
     }
     else return false;
@@ -132,6 +131,7 @@ void chessboard::push(int x, int y, char dir, int camp) {
                     else if (t * camp == 0) {
                         while (x1 < x) {
                             board[x1][y1].chessType = board[x1 + 1][y1].chessType;
+                            movedChess.push( point{x1,y1});
                             x1++;
                         }
                         board[x1][y1].chessType = 0;
@@ -148,6 +148,7 @@ void chessboard::push(int x, int y, char dir, int camp) {
                     else if (t * camp == 0) {
                         while (x1 > x) {
                             board[x1][y1].chessType = board[x1 - 1][y1].chessType;
+                            movedChess.push( point{x1,y1});
                             x1--;
                         }
                         board[x1][y1].chessType = 0;
@@ -164,6 +165,7 @@ void chessboard::push(int x, int y, char dir, int camp) {
                     else if (t * camp == 0) {
                         while (y1 < y) {
                             board[x1][y1].chessType = board[x1][y1 + 1].chessType;
+                            movedChess.push( point{x1,y1});
                             y1++;
                         }
                         board[x1][y1].chessType = 0;
@@ -180,6 +182,7 @@ void chessboard::push(int x, int y, char dir, int camp) {
                     else if (t * camp == 0) {
                         while (y1 > y) {
                             board[x1][y1].chessType = board[x1][y1 - 1].chessType;
+                            movedChess.push( point{x1,y1});
                             y1--;
                         }
                         board[x1][y1].chessType = 0;
@@ -191,4 +194,52 @@ void chessboard::push(int x, int y, char dir, int camp) {
         }
     }
     else return;
+}
+
+void chessboard::offset() {
+    if( movedChess.empty() ) return;
+    while( !movedChess.empty() ){
+        point t=movedChess.top();
+        int start=-1,end=0;
+        for(int i=0 ; i < 8 ;i++){
+            if(board[i][t.y].chessType * board[t.x][t.y].chessType > 0){
+                if( start == -1 ) start=i;
+                else end = i;
+
+            }else {
+                if( end-start+1 >= 3) {
+                    for (int j = start; j <= end; j++) offsetChess.push(point{j, t.y});
+                }
+                start = -1;
+                end = 0;
+            }
+        }
+        if( start-end+1 >= 3) {
+            for (int j = start; j <= end; j++) offsetChess.push(point{j, t.y});
+        }
+        start = -1;
+        end = 0;
+        for(int i=0 ; i < 8 ;i++){
+            if(board[t.x][i].chessType * board[t.x][t.y].chessType > 0){
+                if( start == -1 ) start=i;
+                else end = i;
+
+            }else {
+                if( end-start+1 >= 3) {
+                    for (int j = start; j <= end; j++) offsetChess.push(point{t.x,j});
+                }
+                start = -1;
+                end = 0;
+            }
+        }
+        if( start-end+1 >= 3) {
+            for (int j = start; j <= end; j++) offsetChess.push(point{t.x,j});
+        }
+        movedChess.pop();
+    }
+    while(!offsetChess.empty()){
+        point t = offsetChess.top();
+        board[t.x][t.y].chessType=0;
+        offsetChess.pop();
+    }
 }
