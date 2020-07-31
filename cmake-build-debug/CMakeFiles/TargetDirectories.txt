@@ -1,4 +1,0 @@
-L:/The-Chess-of-Yggdrasill/cmake-build-debug/CMakeFiles/Hello.dir
-L:/The-Chess-of-Yggdrasill/cmake-build-debug/CMakeFiles/edit_cache.dir
-L:/The-Chess-of-Yggdrasill/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-L:/The-Chess-of-Yggdrasill/cmake-build-debug/CMakeFiles/Hello_autogen.dir
