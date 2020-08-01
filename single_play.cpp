@@ -10,21 +10,22 @@ single_play::single_play(QWidget *parent) :
     ui(new Ui::single_play)
 {
     ui->setupUi(this);
-    connect(ui->actionback,&QAction::triggered,[=](){
+    connect(ui->actionback, &QAction::triggered, [=]() {
         emit showmain();
         this->close();
     });
-    ui->label->setPixmap(QPixmap(":/pic/chessboard.png"));
-    chessBoard=new chessboard();
-    QVector<QVector<cell_label*>> t(8,QVector<cell_label*>(8));
+    //this->setStyleSheet("#single_play {background-color: rgb(255, 255, 255)}");
+    //ui->label->setPixmap(QPixmap(":/pic/chessboard.png"));
+    chessBoard = new chessboard();
+    QVector<QVector<cell_label *>> t(8, QVector<cell_label *>(8));
     cells = t;
 
-    num_chess = new int[7]{1,1,30,0,30,1,1};
-    chesstype_gray=-1;
-    chesstype_green=1;
-    camp=-1;
+    num_chess = new int[7]{1, 1, 30, 0, 30, 1, 1};
+    chesstype_gray = -1;
+    chesstype_green = 1;
+    camp = -1;
 
-    ui->gary1->setIconSize(QSize(40,40));
+    ui->gary1->setIconSize(QSize(40, 40));
     ui->gary2->setIconSize(QSize(40,40));
     ui->gary3->setIconSize(QSize(40,40));
     ui->green1->setIconSize(QSize(40,40));
@@ -43,12 +44,14 @@ single_play::single_play(QWidget *parent) :
             if(chessBoard->board[i][j].root == 1) {
                 QLabel *temp = new QLabel(this);
                 temp->setFixedSize(40, 40);
+                temp->setStyleSheet("border:1px solid black");
                 temp->setScaledContents(true);
                 temp->setPixmap(QPixmap(":/pic/root_1.png").scaled(40, 40));
                 temp->move(81 + 41 * j, 64 + 41 * i);
             }else if(chessBoard->board[i][j].root == -1){
                 QLabel * temp=new QLabel(this);
-                temp->setFixedSize(40,40);
+                temp->setFixedSize(40, 40);
+                temp->setStyleSheet("border:1px solid black");
                 temp->setScaledContents(true);
                 temp->setPixmap(QPixmap(":/pic/root_-1.png").scaled(40,40));
                 temp->move(81+41*j,64+41*i);
@@ -80,31 +83,22 @@ single_play::single_play(QWidget *parent) :
                 //cells[i][j]->setPixmap(QPixmap(":/pic/chess_-1.png").scaled(40,40));
                 cells[i][j]->move(81+41*j,64+41*i);
             }
-
-            connect(cells[i][j],&cell_label::clicked,[=]{
-                bool res;
-                if( camp == -1)
-                    res=chessBoard->step(i,j,chesstype_gray);
-                else
-                    res=chessBoard->step(i,j,chesstype_green);
-                if(res){
-                    camp=-camp;
+            cells[i][j]->setStyleSheet("border:1px solid black");
+            connect(cells[i][j], &cell_label::clicked, [=] {
+                bool res = false;
+                if (camp == -1 && num_chess[chesstype_gray + 3] > 0) {
+                    num_chess[chesstype_gray + 3]--;
+                    res = chessBoard->step(i, j, chesstype_gray, num_chess);
+                    chesstype_gray = -1;
+                } else if (camp == 1 && num_chess[chesstype_green + 3] > 0) {
+                    num_chess[chesstype_green + 3]--;
+                    res = chessBoard->step(i, j, chesstype_green, num_chess);
+                    chesstype_green = 1;
+                }
+                if (res) {
+                    camp = -camp;
                     refresh_board(chessBoard);
-//                    if( camp == -1) {
-//                        switch(chesstype_gray){
-//                            case -1:
-//                                cells[i][j]->setPixmap(QPixmap(":/pic/chess_-1.png").scaled(40,40));
-//                                break;
-//                            case -2:
-//                                cells[i][j]->setPixmap(QPixmap(":/pic/chess_-2.png").scaled(40,40));
-//                                break;
-//                            case -3:
-//                                cells[i][j]->setPixmap(QPixmap(":/pic/chess_-3.png").scaled(40,40));
-//                                break;
-//                        }
-//                    }else{
-//
-//                    }
+                    refresh_text();
                 }
 
             });
@@ -141,17 +135,40 @@ void single_play::refresh_board(chessboard *chessBoard) {
                     cells[i][j]->setPixmap(QPixmap(":/pic/chess_-2.png").scaled(40,40));
                     break;
                 case -3:
-                    cells[i][j]->setPixmap(QPixmap(":/pic/chess_-3.png").scaled(40,40));
+                    cells[i][j]->setPixmap(QPixmap(":/pic/chess_-3.png").scaled(40, 40));
                     break;
                 default:
-                    cells[i][j]->setPixmap(QPixmap("").scaled(40,40));
+                    cells[i][j]->setPixmap(QPixmap("").scaled(40, 40));
                     break;
             }
         }
     }
 }
 
-single_play::~single_play()
-{
+void single_play::on_gary1_clicked() {
+    chesstype_gray = -1;
+}
+
+void single_play::on_gary2_clicked() {
+    if (num_chess[1]) chesstype_gray = -2;
+}
+
+void single_play::on_gary3_clicked() {
+    if (num_chess[0]) chesstype_gray = -3;
+}
+
+void single_play::on_green1_clicked() {
+    chesstype_green = 1;
+}
+
+void single_play::on_green2_clicked() {
+    if (num_chess[5]) chesstype_green = 2;
+}
+
+void single_play::on_green3_clicked() {
+    if (num_chess[6]) chesstype_green = 3;
+}
+
+single_play::~single_play() {
     delete ui;
 }

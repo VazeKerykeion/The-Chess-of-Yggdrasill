@@ -51,10 +51,10 @@ bool chessboard::scan_board(int x, int y, int camp, int type) {
 }
 
 
-bool chessboard::step(int x, int y, int chessType) {
+bool chessboard::step(int x, int y, int chessType, int *num_chess) {
     //由于规则，不能将棋子落在己方的根源区域，所以直接返回false
     //只有当chesstype为空时，格子才为空
-    if ( board[x][y].root * chessType > 0 || board[x][y].chessType != 0)
+    if (board[x][y].root * chessType > 0 || board[x][y].chessType != 0)
         return false;
 
     int camp;
@@ -90,7 +90,7 @@ bool chessboard::step(int x, int y, int chessType) {
         push(x + 1, y, 's', camp);
         push(x, y - 1, 'a', camp);
         push(x, y + 1, 'd', camp);
-        offset();
+        offset(num_chess);
         return true;
     }
     else return false;
@@ -196,17 +196,17 @@ void chessboard::push(int x, int y, char dir, int camp) {
     else return;
 }
 
-void chessboard::offset() {
-    if( movedChess.empty() ) return;
-    while( !movedChess.empty() ){
-        point t=movedChess.top();
-        int start=-1,end=0;
-        for(int i=0 ; i < 8 ;i++){
-            if(board[i][t.y].chessType * board[t.x][t.y].chessType > 0){
-                if( start == -1 ) start=i;
+void chessboard::offset(int *num_chess) {
+    if (movedChess.empty()) return;
+    while (!movedChess.empty()) {
+        point t = movedChess.top();
+        int start = -1, end = 0;
+        for (int i = 0; i < 8; i++) {
+            if (board[i][t.y].chessType * board[t.x][t.y].chessType > 0) {
+                if (start == -1) start = i;
                 else end = i;
 
-            }else {
+            } else {
                 if( end-start+1 >= 3) {
                     for (int j = start; j <= end; j++) offsetChess.push(point{j, t.y});
                 }
@@ -237,9 +237,13 @@ void chessboard::offset() {
         }
         movedChess.pop();
     }
-    while(!offsetChess.empty()){
+    while(!offsetChess.empty()) {
         point t = offsetChess.top();
-        board[t.x][t.y].chessType=0;
+        //QString s=QString("当前消除的位置是（%1，%2），消除的棋子是%3，剩余的棋子数量是%4").arg(t.x).arg(t.y).arg(board[t.x][t.y].chessType).arg(num_chess[board[t.x][t.y].chessType + 3]);
+        //QMessageBox::information(NULL,"",s);
+        if (board[t.x][t.y].chessType != 0) num_chess[board[t.x][t.y].chessType + 3]++;
+        board[t.x][t.y].chessType = 0;
+
         offsetChess.pop();
     }
 }

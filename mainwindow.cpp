@@ -6,15 +6,19 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QIcon>
+
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
-        ui(new Ui::MainWindow)
-{
+        ui(new Ui::MainWindow) {
     ui->setupUi(this);
-    model=0;
-    connect(&l1,&local_choice::choice,this,&MainWindow::rec);
-    connect( &con,&connection::showmain,this,&MainWindow::show);
-    connect(&single,&single_play::showmain,this,&MainWindow::show);
+    this->setWindowTitle(tr("世界树棋"));
+    ui->doubleplayer->setText(tr("本地游戏"));
+    ui->localonline->setText(tr("局域网联机"));
+    ui->online->setText(tr("服务器联机"));
+    model = 0;
+    connect(&l1, &local_choice::choice, this, &MainWindow::rec);
+    connect(&con, &connection::showmain, this, &MainWindow::show);
+    connect(&single, &single_play::showmain, this, &MainWindow::show);
 }
 
 MainWindow::~MainWindow()

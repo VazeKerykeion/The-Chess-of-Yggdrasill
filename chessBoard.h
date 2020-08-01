@@ -30,15 +30,20 @@ private:
 
     //落子成功后推动周围棋子
     void push(int x, int y, char dir, int camp);
+
 public:
-    cell ** board;
+    cell **board;
+
     //棋盘初始化
     chessboard();
+
     ~chessboard();
 
     //接受落子，x，y为棋子坐标，chesstype为棋子类型，正负分阵营，范围值为落子是否有效
-    bool step(int x, int y, int chessType);
-    void offset();
+    bool step(int x, int y, int chessType, int *num_chess);
+
+    void offset(int *num_chess);
+
     //判断游戏是否结束，返回值为胜利方，0未未结束
     int judge();
 };
