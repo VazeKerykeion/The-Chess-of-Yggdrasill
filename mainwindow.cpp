@@ -16,9 +16,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->localonline->setText(tr("局域网联机"));
     ui->online->setText(tr("服务器联机"));
     model = 0;
-    connect(&l1, &local_choice::choice, this, &MainWindow::rec);
-    connect(&con, &connection::showmain, this, &MainWindow::show);
-    connect(&single, &single_play::showmain, this, &MainWindow::show);
+
+
 }
 
 MainWindow::~MainWindow()
@@ -42,22 +41,29 @@ void MainWindow::rec(int a){
 }
 
 void MainWindow::on_doubleplayer_clicked() {
-    single.show();
+    single = new single_play();
+    connect(single, &single_play::showmain, this, &MainWindow::show);
+    single->show();
     this->hide();
 }
 
-void MainWindow::on_localonline_clicked(){
-    l1.exec();
-    if(model==1){
+void MainWindow::on_localonline_clicked() {
+    l1 = new local_choice();
+    connect(l1, &local_choice::choice, this, &MainWindow::rec);
+    l1->exec();
 
-    }else{
+    if (model == 1) {
+
+    } else {
 
     }
     //this->show();
 }
 
 void MainWindow::on_online_clicked() {
-    con.show();
+    con = new connection();
+    connect(con, &connection::showmain, this, &MainWindow::show);
+    con->show();
     this->hide();
 }
 

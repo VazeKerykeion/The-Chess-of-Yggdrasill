@@ -23,6 +23,7 @@ private:
     int num_Gray;
     //青方剩余棋子数
     int num_Green;
+    //回合数
     stack<point> movedChess;
     stack<point> offsetChess;
     //扫描周围是否有可以攀附的棋子,type参数为扫描方式，1为扫描周围的根或叶，2为扫描周围的枝，如果都没有则返回false
@@ -40,7 +41,7 @@ public:
     ~chessboard();
 
     //接受落子，x，y为棋子坐标，chesstype为棋子类型，正负分阵营，范围值为落子是否有效
-    bool step(int x, int y, int chessType, int *num_chess);
+    bool step(int x, int y, int chessType);
 
     void offset(int *num_chess);
 

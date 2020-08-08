@@ -44,8 +44,13 @@ private:
 
     void refresh_text();
 
+    void initialize();
+
     void step(int x, int y, int chesstype);
 
+    void pause();
+
+    int turns;
     int *num_chess;
     int chesstype_gray;
     int chesstype_green;

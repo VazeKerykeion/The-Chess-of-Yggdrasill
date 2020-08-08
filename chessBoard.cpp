@@ -3,6 +3,7 @@
 //
 
 #include "chessBoard.h"
+
 #include <QMessageBox>
 chessboard::chessboard() {
     board=new cell *[8];
@@ -11,22 +12,22 @@ chessboard::chessboard() {
         for (int j = 0; j < 8; j++) {
             board[i][j].chessType = 0;
             // C1 至 F1 设置为灰方根源区域
-            if (j > 1 && j < 6 && i == 0) board[i][j].root = 1;
+            if (j > 1 && j < 6 && i == 0) board[i][j].root = -1;
                 // C8 至 F8 设置为青方根源区域
-            else if (j > 1 && j < 6 && i == 7) board[i][j].root = -1;
+            else if (j > 1 && j < 6 && i == 7) board[i][j].root = 1;
                 // 其余设置为普通区域;
             else board[i][j].root = 0;
         }
     }
 
     // D2,E2设置为灰叶
-    board[1][3].chessType = 1;
-    board[1][4].chessType = 1;
+    board[1][3].chessType = -1;
+    board[1][4].chessType = -1;
     // D7,E8设置为青叶
-    board[6][3].chessType = -1;
-    board[6][5].chessType = -1;
-    num_Gray=2;
-    num_Green=2;
+    board[6][3].chessType = 1;
+    board[6][5].chessType = 1;
+    num_Gray = 2;
+    num_Green = 2;
 }
 
 chessboard::~chessboard(){
@@ -51,7 +52,7 @@ bool chessboard::scan_board(int x, int y, int camp, int type) {
 }
 
 
-bool chessboard::step(int x, int y, int chessType, int *num_chess) {
+bool chessboard::step(int x, int y, int chessType) {
     //由于规则，不能将棋子落在己方的根源区域，所以直接返回false
     //只有当chesstype为空时，格子才为空
     if (board[x][y].root * chessType > 0 || board[x][y].chessType != 0)
@@ -90,7 +91,8 @@ bool chessboard::step(int x, int y, int chessType, int *num_chess) {
         push(x + 1, y, 's', camp);
         push(x, y - 1, 'a', camp);
         push(x, y + 1, 'd', camp);
-        offset(num_chess);
+
+
         return true;
     }
     else return false;
@@ -124,14 +126,14 @@ void chessboard::push(int x, int y, char dir, int camp) {
                     // t 为简化下方判断代码的临时变量，表示扫描位置的chessType
                     int t = board[x1][y1].chessType;
 
-                    //根据规则，地方的干 和 我方棋子 会导致该列都无法推动
-                    if (t * camp == -3 || t * camp > 0) break;
+                    //根据规则，地方的干 和 我方棋子 会导致该列都无法推动，同时无法将对方棋子推到其根源区域中
+                    if (t * camp == -3 || t * camp > 0 || board[x1][y1].root * camp < 0) break;
                         //只有当扫描至一处空白区域时，该列棋子向全部向空白处移动
                         //因为是单向移动所以不需要交换，复制前一个值即可
                     else if (t * camp == 0) {
                         while (x1 < x) {
                             board[x1][y1].chessType = board[x1 + 1][y1].chessType;
-                            movedChess.push( point{x1,y1});
+                            movedChess.push(point{x1, y1});
                             x1++;
                         }
                         board[x1][y1].chessType = 0;
@@ -144,11 +146,11 @@ void chessboard::push(int x, int y, char dir, int camp) {
             case 's'://下
                 while (x1 < 7) {
                     int t = board[x1][y1].chessType;
-                    if (t * camp == -3 || t * camp > 0) break;
+                    if (t * camp == -3 || t * camp > 0 || board[x1][y1].root * camp < 0) break;
                     else if (t * camp == 0) {
                         while (x1 > x) {
                             board[x1][y1].chessType = board[x1 - 1][y1].chessType;
-                            movedChess.push( point{x1,y1});
+                            movedChess.push(point{x1, y1});
                             x1--;
                         }
                         board[x1][y1].chessType = 0;
@@ -161,11 +163,11 @@ void chessboard::push(int x, int y, char dir, int camp) {
             case 'a'://左
                 while (y1 > 0) {
                     int t = board[x1][y1].chessType;
-                    if (t * camp == -3 || t * camp > 0) break;
+                    if (t * camp == -3 || t * camp > 0 || board[x1][y1].root * camp < 0) break;
                     else if (t * camp == 0) {
                         while (y1 < y) {
                             board[x1][y1].chessType = board[x1][y1 + 1].chessType;
-                            movedChess.push( point{x1,y1});
+                            movedChess.push(point{x1, y1});
                             y1++;
                         }
                         board[x1][y1].chessType = 0;
@@ -178,11 +180,11 @@ void chessboard::push(int x, int y, char dir, int camp) {
             case 'd'://右
                 while (y1 < 7) {
                     int t = board[x1][y1].chessType;
-                    if (t * camp == -3 || t * camp > 0) break;
+                    if (t * camp == -3 || t * camp > 0 || board[x1][y1].root * camp < 0) break;
                     else if (t * camp == 0) {
                         while (y1 > y) {
                             board[x1][y1].chessType = board[x1][y1 - 1].chessType;
-                            movedChess.push( point{x1,y1});
+                            movedChess.push(point{x1, y1});
                             y1--;
                         }
                         board[x1][y1].chessType = 0;
@@ -199,6 +201,7 @@ void chessboard::push(int x, int y, char dir, int camp) {
 void chessboard::offset(int *num_chess) {
     if (movedChess.empty()) return;
     while (!movedChess.empty()) {
+
         point t = movedChess.top();
         int start = -1, end = 0;
         for (int i = 0; i < 8; i++) {
@@ -242,8 +245,26 @@ void chessboard::offset(int *num_chess) {
         //QString s=QString("当前消除的位置是（%1，%2），消除的棋子是%3，剩余的棋子数量是%4").arg(t.x).arg(t.y).arg(board[t.x][t.y].chessType).arg(num_chess[board[t.x][t.y].chessType + 3]);
         //QMessageBox::information(NULL,"",s);
         if (board[t.x][t.y].chessType != 0) num_chess[board[t.x][t.y].chessType + 3]++;
+        if (board[t.x][t.y].chessType > 0) num_Green--;
+        else if (board[t.x][t.y].chessType < 0) num_Gray--;
         board[t.x][t.y].chessType = 0;
 
         offsetChess.pop();
     }
+}
+
+int chessboard::judge() {
+    bool end = true;
+    if (!num_Green) return -1;
+    else if (!num_Gray) return 1;
+    for (int i = 2; i < 6; i++) {
+        if (board[i][0].chessType == 0) end = false;
+    }
+    if (end) return -1;
+    end = true;
+    for (int i = 2; i < 6; i++) {
+        if (board[i][7].chessType == 0) end = false;
+    }
+    if (end) return 1;
+    return 0;
 }

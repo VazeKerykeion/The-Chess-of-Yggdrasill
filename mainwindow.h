@@ -16,19 +16,24 @@ Q_OBJECT
 
 public:
     explicit MainWindow(QWidget *parent = 0);
+
     ~MainWindow();
     //void paintEvent(QPaintEvent *);
 private slots:
+
     void on_localonline_clicked();
+
     void on_online_clicked();
+
     void on_doubleplayer_clicked();
+
     void rec(int a);
 
 private:
     Ui::MainWindow *ui;
-    local_choice l1;
-    connection con;
-    single_play single;
+    local_choice *l1;
+    connection *con;
+    single_play *single;
     int model;
 
 };
