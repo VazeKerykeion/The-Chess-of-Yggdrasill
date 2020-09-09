@@ -11,7 +11,9 @@ class local_choice : public QDialog
 {
     Q_OBJECT
 signals:
+
     void showmain();
+
     void choice(int a);
 
 public:
@@ -20,8 +22,11 @@ public:
     ~local_choice();
 
 private slots:
-    void on_pushbotton_click();
-    void on_pushbotton_2_click();
+
+    void on_pushButton_clicked();
+
+    void on_pushButton_2_clicked();
+
 private:
     Ui::local_choice *ui;
 };

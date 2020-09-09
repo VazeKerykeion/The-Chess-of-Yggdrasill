@@ -5,7 +5,7 @@
 #include "local_choice.h"
 #include "connection.h"
 #include "single_play.h"
-
+#include "local_master.h"
 namespace Ui {
     class MainWindow;
 }
@@ -29,11 +29,16 @@ private slots:
 
     void rec(int a);
 
+signals:
+
+    void con_mode(int a);
+
 private:
     Ui::MainWindow *ui;
     local_choice *l1;
     connection *con;
     single_play *single;
+    local_master *localMaster;
     int model;
 
 };

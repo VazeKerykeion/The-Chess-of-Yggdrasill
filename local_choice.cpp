@@ -13,11 +13,12 @@ local_choice::~local_choice()
     delete ui;
 }
 
-void local_choice::on_pushbotton_click(){
+void local_choice::on_pushButton_clicked() {
     emit choice(1);
     accept();
 }
-void local_choice::on_pushbotton_2_click(){
+
+void local_choice::on_pushButton_2_clicked() {
     emit choice(2);
     accept();
 }

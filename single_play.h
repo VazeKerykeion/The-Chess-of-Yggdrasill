@@ -36,6 +36,8 @@ private slots:
 
     void on_green3_clicked();
 
+    void cells_clicked(int i, int j);
+
 
 private:
     Ui::single_play *ui;

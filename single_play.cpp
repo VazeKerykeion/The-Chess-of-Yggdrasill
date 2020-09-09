@@ -106,6 +106,7 @@ void single_play::initialize() {
 
             cell_label *cell = new cell_label(this);
             cells[i][j] = cell;
+            cells[i][j]->set_point(i, j);
             cells[i][j]->setVisible(true);
             cells[i][j]->setFixedSize(40, 40);
             cells[i][j]->setScaledContents(true);
@@ -119,55 +120,58 @@ void single_play::initialize() {
             }
 
 
-            connect(cells[i][j], &cell_label::clicked, [=] {
-                bool res = false;
-                if (camp == -1 && num_chess[chesstype_gray + 3] > 0) {
-                    res = chessBoard->step(i, j, chesstype_gray);
-                    if (res) {
-                        num_chess[chesstype_gray + 3]--;
-                        chesstype_gray = -1;
-                    }
-
-                } else if (camp == 1 && num_chess[chesstype_green + 3] > 0) {
-                    res = chessBoard->step(i, j, chesstype_green);
-                    if (res) {
-                        num_chess[chesstype_green + 3]--;
-                        chesstype_green = 1;
-                    }
-                }
-                if (res) {
-                    turns++;
-                    if (turns < 2) camp = -1;
-                    else if (turns >= 2 && turns < 4) camp = 1;
-                    else camp = -camp;
-                    /*
-                    refresh_board(chessBoard);
-                    QString s=QString("暂停一下");
-                    QMessageBox::information(NULL,"",s);
-                    pause();
-                    */
-                    chessBoard->offset(num_chess);
-                    //Sleep(1000);
-                    refresh_board(chessBoard);
-                    refresh_text();
-                    int reward = chessBoard->judge();
-                    if (reward == 1) {
-                        QString s = QString("青方胜利");
-                        QMessageBox::information(NULL, "", s);
-                        this->close();
-                        emit showmain();
-                    } else if (reward == -1) {
-                        QString s = QString("灰方胜利");
-                        QMessageBox::information(NULL, "", s);
-                        this->close();
-                        emit showmain();
-                    }
-
-                }
-
-            });
+            connect(cells[i][j], &cell_label::clicked, this, &single_play::cells_clicked);
         }
     }
+}
+
+void single_play::cells_clicked(int i, int j) {
+    bool res = false;
+    if (camp == -1 && num_chess[chesstype_gray + 3] > 0) {
+        res = chessBoard->step(i, j, chesstype_gray);
+        if (res) {
+            num_chess[chesstype_gray + 3]--;
+            chesstype_gray = -1;
+        }
+
+    } else if (camp == 1 && num_chess[chesstype_green + 3] > 0) {
+        res = chessBoard->step(i, j, chesstype_green);
+        if (res) {
+            num_chess[chesstype_green + 3]--;
+            chesstype_green = 1;
+        }
+    }
+    if (res) {
+        turns++;
+        if (turns < 2) camp = -1;
+        else if (turns >= 2 && turns < 4) camp = 1;
+        else camp = -camp;
+        /*
+        refresh_board(chessBoard);
+        QString s=QString("暂停一下");
+        QMessageBox::information(NULL,"",s);
+        pause();
+        */
+        chessBoard->offset(num_chess);
+        //Sleep(1000);
+        refresh_board(chessBoard);
+        refresh_text();
+        int reward = chessBoard->judge();
+        if (reward == 1) {
+            QString s = QString("青方胜利");
+            QMessageBox::information(NULL, "", s);
+            this->close();
+            emit showmain();
+        } else if (reward == -1) {
+            QString s = QString("灰方胜利");
+            QMessageBox::information(NULL, "", s);
+            this->close();
+            emit showmain();
+        }
+
+    }
+
+
 }
 
 void single_play::on_gary1_clicked() {

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <class>local_slave</class>
+    <widget class="QMainWindow" name="local_slave">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>638</width>
+                <height>600</height>
+            </rect>
+        </property>
+        <property name="windowTitle">
+            <string>客机</string>
+        </property>
+        <widget class="QWidget" name="centralwidget">
+            <widget class="QPushButton" name="rock">
+                <property name="geometry">
+                    <rect>
+                        <x>70</x>
+                        <y>430</y>
+                        <width>71</width>
+                        <height>71</height>
+                    </rect>
+                </property>
+                <property name="text">
+                    <string>石头</string>
+                </property>
+            </widget>
+            <widget class="QPushButton" name="scissors">
+                <property name="geometry">
+                    <rect>
+                        <x>240</x>
+                        <y>430</y>
+                        <width>71</width>
+                        <height>71</height>
+                    </rect>
+                </property>
+                <property name="text">
+                    <string>剪刀</string>
+                </property>
+            </widget>
+            <widget class="QPushButton" name="paper">
+                <property name="geometry">
+                    <rect>
+                        <x>440</x>
+                        <y>430</y>
+                        <width>71</width>
+                        <height>71</height>
+                    </rect>
+                </property>
+                <property name="text">
+                    <string>布</string>
+                </property>
+            </widget>
+            <widget class="QTextEdit" name="textEdit">
+                <property name="geometry">
+                    <rect>
+                        <x>230</x>
+                        <y>130</y>
+                        <width>104</width>
+                        <height>71</height>
+                    </rect>
+                </property>
+                <property name="styleSheet">
+                    <string notr="true">font: 25pt &quot;8514oem&quot;;</string>
+                </property>
+            </widget>
+        </widget>
+        <widget class="QMenuBar" name="menubar">
+            <property name="geometry">
+                <rect>
+                    <x>0</x>
+                    <y>0</y>
+                    <width>638</width>
+                    <height>23</height>
+                </rect>
+            </property>
+        </widget>
+        <widget class="QStatusBar" name="statusbar"/>
+    </widget>
+    <resources/>
+    <connections/>
+</ui>

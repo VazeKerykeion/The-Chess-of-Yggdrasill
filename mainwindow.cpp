@@ -54,7 +54,18 @@ void MainWindow::on_localonline_clicked() {
 
     if (model == 1) {
 
-    } else {
+        localMaster = new local_master();
+        localMaster->show();
+        this->hide();
+
+    } else if (model == 2) {
+
+        con = new connection();
+        connect(this, &MainWindow::con_mode, con, &connection::change_mode);
+        connect(con, &connection::showmain, this, &MainWindow::show);
+        emit con_mode(1);
+        con->show();
+        this->hide();
 
     }
     //this->show();
@@ -62,6 +73,7 @@ void MainWindow::on_localonline_clicked() {
 
 void MainWindow::on_online_clicked() {
     con = new connection();
+    connect(this, &MainWindow::con_mode, con, &connection::change_mode);
     connect(con, &connection::showmain, this, &MainWindow::show);
     con->show();
     this->hide();
