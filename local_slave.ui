@@ -6,64 +6,151 @@
             <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>638</width>
+                <width>480</width>
                 <height>600</height>
             </rect>
         </property>
         <property name="windowTitle">
-            <string>客机</string>
+            <string>世界树棋</string>
+        </property>
+        <property name="styleSheet">
+            <string notr="true">#local_slave{background-color: rgb(255, 255, 255);}
+            </string>
         </property>
         <widget class="QWidget" name="centralwidget">
-            <widget class="QPushButton" name="rock">
+            <widget class="QPushButton" name="chess1">
                 <property name="geometry">
                     <rect>
-                        <x>70</x>
-                        <y>430</y>
-                        <width>71</width>
-                        <height>71</height>
+                        <x>60</x>
+                        <y>460</y>
+                        <width>40</width>
+                        <height>40</height>
                     </rect>
                 </property>
                 <property name="text">
                     <string>石头</string>
                 </property>
             </widget>
-            <widget class="QPushButton" name="scissors">
+            <widget class="QPushButton" name="chess2">
                 <property name="geometry">
                     <rect>
-                        <x>240</x>
-                        <y>430</y>
-                        <width>71</width>
-                        <height>71</height>
+                        <x>190</x>
+                        <y>460</y>
+                        <width>40</width>
+                        <height>40</height>
                     </rect>
                 </property>
                 <property name="text">
                     <string>剪刀</string>
                 </property>
             </widget>
-            <widget class="QPushButton" name="paper">
+            <widget class="QPushButton" name="chess3">
                 <property name="geometry">
                     <rect>
-                        <x>440</x>
-                        <y>430</y>
-                        <width>71</width>
-                        <height>71</height>
+                        <x>320</x>
+                        <y>460</y>
+                        <width>40</width>
+                        <height>40</height>
                     </rect>
                 </property>
                 <property name="text">
                     <string>布</string>
                 </property>
             </widget>
-            <widget class="QTextEdit" name="textEdit">
+            <widget class="QLabel" name="num_chess1">
                 <property name="geometry">
                     <rect>
-                        <x>230</x>
-                        <y>130</y>
-                        <width>104</width>
-                        <height>71</height>
+                        <x>100</x>
+                        <y>460</y>
+                        <width>40</width>
+                        <height>40</height>
                     </rect>
                 </property>
                 <property name="styleSheet">
-                    <string notr="true">font: 25pt &quot;8514oem&quot;;</string>
+                    <string notr="true">border:1px solid black;
+                        background-color: rgb(255, 255, 255);
+                    </string>
+                </property>
+                <property name="text">
+                    <string/>
+                </property>
+            </widget>
+            <widget class="QLabel" name="num_chess2">
+                <property name="geometry">
+                    <rect>
+                        <x>230</x>
+                        <y>460</y>
+                        <width>40</width>
+                        <height>40</height>
+                    </rect>
+                </property>
+                <property name="styleSheet">
+                    <string notr="true">border:1px solid black;
+                        background-color: rgb(255, 255, 255);
+                    </string>
+                </property>
+                <property name="text">
+                    <string/>
+                </property>
+            </widget>
+            <widget class="QLabel" name="num_chess3">
+                <property name="geometry">
+                    <rect>
+                        <x>360</x>
+                        <y>460</y>
+                        <width>40</width>
+                        <height>40</height>
+                    </rect>
+                </property>
+                <property name="styleSheet">
+                    <string notr="true">border:1px solid black;
+                        background-color: rgb(255, 255, 255);
+                    </string>
+                </property>
+                <property name="text">
+                    <string/>
+                </property>
+            </widget>
+            <widget class="QLabel" name="label_3">
+                <property name="geometry">
+                    <rect>
+                        <x>380</x>
+                        <y>300</y>
+                        <width>80</width>
+                        <height>20</height>
+                    </rect>
+                </property>
+                <property name="text">
+                    <string>当前使用的棋子</string>
+                </property>
+            </widget>
+            <widget class="QLabel" name="label_4">
+                <property name="geometry">
+                    <rect>
+                        <x>400</x>
+                        <y>340</y>
+                        <width>40</width>
+                        <height>40</height>
+                    </rect>
+                </property>
+                <property name="text">
+                    <string/>
+                </property>
+            </widget>
+            <widget class="QLabel" name="label_2">
+                <property name="geometry">
+                    <rect>
+                        <x>380</x>
+                        <y>120</y>
+                        <width>80</width>
+                        <height>70</height>
+                    </rect>
+                </property>
+                <property name="styleSheet">
+                    <string notr="true">font: 20pt &quot;8514oem&quot;;</string>
+                </property>
+                <property name="text">
+                    <string>对手回合</string>
                 </property>
             </widget>
         </widget>
@@ -72,13 +159,48 @@
                 <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>638</width>
+                    <width>480</width>
                     <height>23</height>
                 </rect>
             </property>
+            <widget class="QMenu" name="menumenu">
+                <property name="title">
+                    <string>菜单</string>
+                </property>
+                <addaction name="actionback"/>
+                <addaction name="actionquit"/>
+            </widget>
+            <addaction name="menumenu"/>
         </widget>
         <widget class="QStatusBar" name="statusbar"/>
+        <action name="actionback">
+            <property name="text">
+                <string>返回到主界面</string>
+            </property>
+        </action>
+        <action name="actionquit">
+            <property name="text">
+                <string>退出</string>
+            </property>
+        </action>
     </widget>
     <resources/>
-    <connections/>
+    <connections>
+        <connection>
+            <sender>actionquit</sender>
+            <signal>triggered()</signal>
+            <receiver>local_slave</receiver>
+            <slot>close()</slot>
+            <hints>
+                <hint type="sourcelabel">
+                    <x>-1</x>
+                    <y>-1</y>
+                </hint>
+                <hint type="destinationlabel">
+                    <x>239</x>
+                    <y>299</y>
+                </hint>
+            </hints>
+        </connection>
+    </connections>
 </ui>

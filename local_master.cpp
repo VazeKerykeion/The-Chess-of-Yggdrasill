@@ -10,11 +10,24 @@ local_master::local_master(QWidget *parent) :
     ui->setupUi(this);
     tcpServer = new QTcpServer(this);
     connect(tcpServer, &QTcpServer::newConnection, this, &local_master::new_client);
+    connect(ui->actionback, &QAction::triggered, [=]() {
+        emit showmain();
+        this->close();
+        delete this;
+    });
     tcpServer->listen(QHostAddress::Any, 9888);
     wait = 0;
     ui->chess1->setVisible(false);
     ui->chess3->setVisible(false);
     ui->chess2->setVisible(false);
+    ui->num_chess1->setVisible(false);
+    ui->num_chess2->setVisible(false);
+    ui->num_chess3->setVisible(false);
+    ui->label_2->setText("");
+    ui->label_3->setVisible(false);
+    ui->label_4->setVisible(false);
+    picname = new QString[7]{":/pic/chess_-3.png", ":/pic/chess_-2.png", ":/pic/chess_-1.png", "", ":/pic/chess_1.png",
+                             ":/pic/chess_2.png", ":/pic/chess_3.png"};
     count_rps = 0;
     master_rps = 0;
     slave_rps = 0;
@@ -31,12 +44,48 @@ void local_master::read_data() {
     if (wait) {
         if (wait == 1) {
             //QMessageBox::information(NULL,"提示",data);
-            if (data == "chess1") slave_rps = 1;
-            else if (data == "chess2") slave_rps = 2;
-            else if (data == "chess3") slave_rps = 3;
+            if (data == "rock") slave_rps = 1;
+            else if (data == "scissors") slave_rps = 2;
+            else if (data == "paper") slave_rps = 3;
             count_rps++;
             if (count_rps == 2) {
                 first_second();
+            }
+        } else if (wait == 3) {
+            if (data == "continue") wait = 2;
+            else {
+                QStringList list = data.split(',');
+                int x = list[0].toInt();
+                int y = list[1].toInt();
+                int type = list[2].toInt();
+                int con = list[3].toInt();
+                chessBoard->step(x, y, type);
+                num_chess[type + 3]--;
+                turns++;
+                chessBoard->offset(num_chess);
+                refresh_board(chessBoard);
+                refresh_text();
+                int reward = chessBoard->judge();
+                if (reward == 1) {
+                    QString s = QString("青方胜利");
+                    QMessageBox::information(NULL, "", s);
+                    this->close();
+                    emit showmain();
+                    delete this;
+                } else if (reward == -1) {
+                    QString s = QString("灰方胜利");
+                    QMessageBox::information(NULL, "", s);
+                    this->close();
+                    emit showmain();
+                    delete this;
+                }
+                if (!con) tcpSocket->write("continue");
+                else {
+                    wait = 2;
+                    ui->label_2->setText("你的回合");
+                }
+
+
             }
         }
     } else {
@@ -60,6 +109,9 @@ void local_master::on_chess1_clicked() {
         if (count_rps == 2) {
             first_second();
         }
+    } else {
+        chesstype = 1;
+        ui->label_4->setPixmap(QPixmap(picname[chesstype * order + 3]));
     }
 }
 
@@ -73,6 +125,10 @@ void local_master::on_chess2_clicked() {
         if (count_rps == 2) {
             first_second();
         }
+    } else {
+        chesstype = 2;
+        ui->label_4->setPixmap(QPixmap(picname[chesstype * order + 3]));
+
     }
 }
 
@@ -86,6 +142,9 @@ void local_master::on_chess3_clicked() {
         if (count_rps == 2) {
             first_second();
         }
+    } else {
+        chesstype = 3;
+        ui->label_4->setPixmap(QPixmap(picname[chesstype * order + 3]));
     }
 }
 
@@ -106,13 +165,13 @@ void local_master::first_second() {
         if ((master_rps == 1 && slave_rps == 2) || (master_rps == 2 && slave_rps == 3) ||
             (master_rps == 3 && slave_rps == 1)) {
             order = -1;
-            ui->textEdit->setText("先手");
+
             tcpSocket->write("second");
             //QMessageBox::information(NULL,"提示","胜利，先手");
         } else if ((master_rps == 3 && slave_rps == 2) || (master_rps == 1 && slave_rps == 3) ||
                    (master_rps == 2 && slave_rps == 1)) {
             order = 1;
-            ui->textEdit->setText("后手");
+
             tcpSocket->write("first");
         }
         //QMessageBox::information(NULL,"提示","失败，后手");
@@ -120,7 +179,23 @@ void local_master::first_second() {
         ui->chess1->setText("");
         ui->chess3->setText("");
         ui->chess2->setText("");
-        wait = 2;
+        ui->chess1->setEnabled(true);
+        ui->chess3->setEnabled(true);
+        ui->chess2->setEnabled(true);
+        ui->num_chess1->setVisible(true);
+        ui->num_chess2->setVisible(true);
+        ui->num_chess3->setVisible(true);
+        ui->label_3->setVisible(true);
+        ui->label_4->setVisible(true);
+        chesstype = 1;
+        ui->label_4->setPixmap(QPixmap(picname[chesstype * order + 3]));
+        if (order == -1) {
+            wait = 2;
+            ui->label_2->setText("你的回合");
+        } else {
+            wait = 3;
+            ui->label_2->setText("对手回合");
+        }
         initialize(order);
 
     }
@@ -132,109 +207,133 @@ void local_master::initialize(int order) {
     QVector<QVector<cell_label *>> t(8, QVector<cell_label *>(8));
     cells = t;
 
-    num_chess = new int[3]{30, 1, 1};
-    chesstype = order;
+    num_chess = new int[7]{1, 1, 30, 0, 30, 1, 1};
 
-    //camp = -1;
+
 
     ui->chess1->setIconSize(QSize(40, 40));
     ui->chess2->setIconSize(QSize(40, 40));
     ui->chess3->setIconSize(QSize(40, 40));
     if (order == -1) {
-        ui->chess1->setIcon(QPixmap(":/pic/chess_-1.png"));
-        ui->chess2->setIcon(QPixmap(":/pic/chess_-2.png"));
-        ui->chess3->setIcon(QPixmap(":/pic/chess_-3.png"));
+        ui->chess1->setIcon(QPixmap(picname[2]));
+        ui->chess2->setIcon(QPixmap(picname[1]));
+        ui->chess3->setIcon(QPixmap(picname[0]));
     } else {
-        ui->chess1->setIcon(QPixmap(":/pic/chess_1.png"));
-        ui->chess2->setIcon(QPixmap(":/pic/chess_2.png"));
-        ui->chess3->setIcon(QPixmap(":/pic/chess_3.png"));
+        ui->chess1->setIcon(QPixmap(picname[4]));
+        ui->chess2->setIcon(QPixmap(picname[5]));
+        ui->chess3->setIcon(QPixmap(picname[6]));
     }
-    /*
     refresh_text();
+    int c = 0;
     for(int i = 0 ; i < 8 ; i++){
         for(int j = 0 ; j < 8 ; j++){
             if(chessBoard->board[i][j].root == 1) {
                 QLabel *temp = new QLabel(this);
                 temp->setFixedSize(40, 40);
+                temp->setVisible(true);
                 temp->setStyleSheet("border:1px solid black");
                 temp->setScaledContents(true);
                 temp->setPixmap(QPixmap(":/pic/root_1.png").scaled(40, 40));
-                temp->move(81 + 41 * j, 64 + 41 * i);
+                if (order == 1) temp->move(20 + 41 * j, 64 + 41 * i);
+                else temp->move(307 - 41 * j, 351 - 41 * i);
+                c++;
             } else if (chessBoard->board[i][j].root == -1) {
                 QLabel *temp = new QLabel(this);
                 temp->setFixedSize(40, 40);
+                temp->setVisible(true);
                 temp->setStyleSheet("border:1px solid black");
                 temp->setScaledContents(true);
                 temp->setPixmap(QPixmap(":/pic/root_-1.png").scaled(40, 40));
-                temp->move(81 + 41 * j, 64 + 41 * i);
+                if (order == 1) temp->move(20 + 41 * j, 64 + 41 * i);
+                else temp->move(307 - 41 * j, 351 - 41 * i);
             }
 
             cell_label *cell = new cell_label(this);
             cells[i][j] = cell;
+            cells[i][j]->set_point(i, j);
             cells[i][j]->setVisible(true);
             cells[i][j]->setFixedSize(40, 40);
             cells[i][j]->setScaledContents(true);
-            cells[i][j]->move(81 + 41 * j, 64 + 41 * i);
+
             cells[i][j]->setStyleSheet("border:1px solid black");
-
-            if (chessBoard->board[i][j].chessType == 1) {
-                cells[i][j]->setPixmap(QPixmap(":/pic/chess_1.png").scaled(40, 40));
-            } else if (chessBoard->board[i][j].chessType == -1) {
-                cells[i][j]->setPixmap(QPixmap(":/pic/chess_-1.png").scaled(40, 40));
-            }
+            cells[i][j]->setPixmap(QPixmap(picname[chessBoard->board[i][j].chessType + 3]).scaled(40, 40));
 
 
-            connect(cells[i][j], &cell_label::clicked, [=] {
-                bool res = false;
-                if (camp == -1 && num_chess[chesstype_gray + 3] > 0) {
-                    res = chessBoard->step(i, j, chesstype_gray);
-                    if (res) {
-                        num_chess[chesstype_gray + 3]--;
-                        chesstype_gray = -1;
-                    }
+            connect(cells[i][j], &cell_label::clicked, this, &local_master::cells_clicked);
 
-                } else if (camp == 1 && num_chess[chesstype_green + 3] > 0) {
-                    res = chessBoard->step(i, j, chesstype_green);
-                    if (res) {
-                        num_chess[chesstype_green + 3]--;
-                        chesstype_green = 1;
-                    }
-                }
-                if (res) {
-                    turns++;
-                    if (turns < 2) camp = -1;
-                    else if (turns >= 2 && turns < 4) camp = 1;
-                    else camp = -camp;
-
-                    chessBoard->offset(num_chess);
-                    //Sleep(1000);
-                    refresh_board(chessBoard);
-                    refresh_text();
-                    int reward = chessBoard->judge();
-                    if (reward == 1) {
-                        QString s = QString("青方胜利");
-                        QMessageBox::information(NULL, "", s);
-                        this->close();
-                        emit showmain();
-                    } else if (reward == -1) {
-                        QString s = QString("灰方胜利");
-                        QMessageBox::information(NULL, "", s);
-                        this->close();
-                        emit showmain();
-                    }
-
-                }
-
-            });
         }
     }
-    */
+
+    if (order == 1) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                cells[i][j]->move(20 + 41 * j, 64 + 41 * i);
+            }
+        }
+    } else {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                cells[i][j]->move(307 - 41 * j, 351 - 41 * i);
+            }
+        }
+    }
+}
+
+void local_master::cells_clicked(int i, int j) {
+    if (wait == 2) {
+        bool res = false;
+        if (num_chess[chesstype * order + 3] > 0) {
+            res = chessBoard->step(i, j, chesstype * order);
+            if (res) {
+                num_chess[chesstype * order + 3]--;
+                turns++;
+                QString data = QString("%1,%2,%3,").arg(i).arg(j).arg(chesstype * order);
+
+                int s;
+                if (order == -1) s = 1;
+                else s = 3;
+                if (turns < s) data += '0';
+                else data += '1';
+                tcpSocket->write(data.toUtf8());
+                ui->label_2->setText("对手回合");
+                chesstype = 1;
+                ui->label_4->setPixmap(QPixmap(picname[chesstype * order + 3]));
+                wait = 3;
+                chessBoard->offset(num_chess);
+
+                refresh_board(chessBoard);
+                refresh_text();
+                int reward = chessBoard->judge();
+                if (reward == 1) {
+                    QString s = QString("青方胜利");
+                    QMessageBox::information(NULL, "", s);
+                    this->close();
+                    emit showmain();
+                    delete this;
+                } else if (reward == -1) {
+                    QString s = QString("灰方胜利");
+                    QMessageBox::information(NULL, "", s);
+                    this->close();
+                    emit showmain();
+                    delete this;
+                }
+            }
+        }
+    }
 }
 
 void local_master::refresh_text() {
-    ui->num_chess1->setText(QString::number(num_chess[0]));
-    ui->num_chess2->setText(QString::number(num_chess[1]));
-    ui->num_chess3->setText(QString::number(num_chess[2]));
+    ui->num_chess1->setText(QString::number(num_chess[1 * order + 3]));
+    ui->num_chess2->setText(QString::number(num_chess[2 * order + 3]));
+    ui->num_chess3->setText(QString::number(num_chess[3 * order + 3]));
+}
+
+void local_master::refresh_board(chessboard *chessBoard) {
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            cells[i][j]->setPixmap(QPixmap(picname[chessBoard->board[i][j].chessType + 3]).scaled(40, 40));
+        }
+    }
 }
 
 local_master::~local_master() {

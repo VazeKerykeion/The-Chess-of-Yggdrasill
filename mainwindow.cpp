@@ -55,6 +55,7 @@ void MainWindow::on_localonline_clicked() {
     if (model == 1) {
 
         localMaster = new local_master();
+        connect(localMaster, &local_master::showmain, this, &MainWindow::show);
         localMaster->show();
         this->hide();
 

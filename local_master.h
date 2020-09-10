@@ -18,6 +18,10 @@ public:
 
     ~local_master();
 
+signals:
+
+    void showmain();
+
 private slots:
 
     void new_client();
@@ -30,12 +34,16 @@ private slots:
 
     void on_chess3_clicked();
 
+    void cells_clicked(int i, int j);
+
 private:
     QVector<QVector<cell_label *>> cells;
 
     void refresh_text();
 
     void first_second();
+
+    void refresh_board(chessboard *chessBoard);
 
     void initialize(int order);
 
@@ -44,6 +52,7 @@ private:
     QTcpServer *tcpServer;
     QTcpSocket *tcpSocket;
     chessboard *chessBoard;
+    QString *picname;
     int wait;
     int count_rps;
     int master_rps;

@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <QtNetwork>
+#include "chessBoard.h"
+#include "cell_label.h"
 
 namespace Ui {
     class local_slave;
@@ -16,23 +18,42 @@ public:
 
     ~local_slave();
 
+signals:
+
+    void showmain();
+
 public slots:
 
     void get_socket(QTcpSocket *t);
 
     void read_data();
 
-    void on_rock_clicked();
+    void on_chess1_clicked();
 
-    void on_scissors_clicked();
+    void on_chess2_clicked();
 
-    void on_paper_clicked();
+    void on_chess3_clicked();
+
+    void cells_clicked(int i, int j);
 
 private:
+    QVector<QVector<cell_label *>> cells;
+
+    void initialize(int order);
+
+    void refresh_text();
+
+    void refresh_board(chessboard *chessBoard);
+
     Ui::local_slave *ui;
     QTcpSocket *tcpSocket;
+    chessboard *chessBoard;
+    QString *picname;
+    int turns;
     int wait;
     int order;
+    int *num_chess;
+    int chesstype;
 };
 
 #endif // LOCAL_SLAVE_H

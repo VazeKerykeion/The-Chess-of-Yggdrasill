@@ -23,12 +23,13 @@ void connection::on_pushButton_2_clicked() {
     if (con_mode == 1) {
 
         tcpSocket = new QTcpSocket();
-        tcpSocket->connectToHost(ui->textEdit_2->toPlainText(), 9888);
+        tcpSocket->connectToHost(ui->IPaddr->text(), 9888);
         if (tcpSocket->waitForConnected(1000)) {
             QMessageBox::information(NULL, "提示", "该主机可用");
             tcpSocket->write("game start");
             localSlave = new local_slave(this);
             connect(this, &connection::send_socket, localSlave, &local_slave::get_socket);
+            connect(localSlave, &local_slave::showmain, this, &connection::show);
             emit send_socket(tcpSocket);
             localSlave->show();
             this->hide();
@@ -44,8 +45,8 @@ void connection::on_pushButton_2_clicked() {
 void connection::change_mode(int a) {
     con_mode = a;
     if (con_mode == 1) {
-        ui->textEdit->setEnabled(false);
-        ui->textEdit_3->setEnabled(false);
-        ui->textEdit_4->setEnabled(false);
+        ui->player_name->setEnabled(false);
+        ui->port->setEnabled(false);
+        ui->password->setEnabled(false);
     }
 }

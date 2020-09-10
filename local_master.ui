@@ -13,6 +13,9 @@
         <property name="windowTitle">
             <string>主机</string>
         </property>
+        <property name="styleSheet">
+            <string notr="true">#local_master {background-color: rgb(255, 255, 255)}</string>
+        </property>
         <widget class="QWidget" name="centralwidget">
             <widget class="QLabel" name="label">
                 <property name="geometry">
@@ -69,19 +72,6 @@
                     <string>布</string>
                 </property>
             </widget>
-            <widget class="QTextEdit" name="textEdit">
-                <property name="geometry">
-                    <rect>
-                        <x>160</x>
-                        <y>60</y>
-                        <width>104</width>
-                        <height>71</height>
-                    </rect>
-                </property>
-                <property name="styleSheet">
-                    <string notr="true">font: 25pt &quot;8514oem&quot;;</string>
-                </property>
-            </widget>
             <widget class="QLabel" name="num_chess1">
                 <property name="geometry">
                     <rect>
@@ -136,6 +126,48 @@
                     <string/>
                 </property>
             </widget>
+            <widget class="QLabel" name="label_2">
+                <property name="geometry">
+                    <rect>
+                        <x>380</x>
+                        <y>120</y>
+                        <width>80</width>
+                        <height>70</height>
+                    </rect>
+                </property>
+                <property name="styleSheet">
+                    <string notr="true">font: 20pt &quot;8514oem&quot;;</string>
+                </property>
+                <property name="text">
+                    <string>对手回合</string>
+                </property>
+            </widget>
+            <widget class="QLabel" name="label_3">
+                <property name="geometry">
+                    <rect>
+                        <x>375</x>
+                        <y>300</y>
+                        <width>80</width>
+                        <height>20</height>
+                    </rect>
+                </property>
+                <property name="text">
+                    <string>当前使用的棋子</string>
+                </property>
+            </widget>
+            <widget class="QLabel" name="label_4">
+                <property name="geometry">
+                    <rect>
+                        <x>400</x>
+                        <y>340</y>
+                        <width>40</width>
+                        <height>40</height>
+                    </rect>
+                </property>
+                <property name="text">
+                    <string/>
+                </property>
+            </widget>
         </widget>
         <widget class="QMenuBar" name="menubar">
             <property name="geometry">
@@ -146,9 +178,44 @@
                     <height>23</height>
                 </rect>
             </property>
+            <widget class="QMenu" name="menumenu">
+                <property name="title">
+                    <string>菜单</string>
+                </property>
+                <addaction name="actionback"/>
+                <addaction name="actionquit"/>
+            </widget>
+            <addaction name="menumenu"/>
         </widget>
         <widget class="QStatusBar" name="statusbar"/>
+        <action name="actionback">
+            <property name="text">
+                <string>返回到主界面</string>
+            </property>
+        </action>
+        <action name="actionquit">
+            <property name="text">
+                <string>退出</string>
+            </property>
+        </action>
     </widget>
     <resources/>
-    <connections/>
+    <connections>
+        <connection>
+            <sender>actionquit</sender>
+            <signal>triggered()</signal>
+            <receiver>local_master</receiver>
+            <slot>close()</slot>
+            <hints>
+                <hint type="sourcelabel">
+                    <x>-1</x>
+                    <y>-1</y>
+                </hint>
+                <hint type="destinationlabel">
+                    <x>239</x>
+                    <y>299</y>
+                </hint>
+            </hints>
+        </connection>
+    </connections>
 </ui>
