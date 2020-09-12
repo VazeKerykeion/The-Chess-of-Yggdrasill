@@ -204,6 +204,7 @@ void chessboard::offset(int *num_chess) {
     while (!movedChess.empty()) {
         //QMessageBox::information(NULL,"","暂停一下");
         point t = movedChess.top();
+        if (board[t.x][t.y].root != 0) break;
         int start = -1, end = 0;
         for (int i = 0; i < 8; i++) {
             if (board[i][t.y].chessType * board[t.x][t.y].chessType > 0) {
@@ -259,13 +260,13 @@ int chessboard::judge() {
     if (!num_Green) return -1;
     else if (!num_Gray) return 1;
     for (int i = 2; i < 6; i++) {
-        if (board[i][0].chessType == 0) end = false;
-    }
-    if (end) return -1;
-    end = true;
-    for (int i = 2; i < 6; i++) {
-        if (board[i][7].chessType == 0) end = false;
+        if (board[0][i].chessType == 0) end = false;
     }
     if (end) return 1;
+    end = true;
+    for (int i = 2; i < 6; i++) {
+        if (board[7][i].chessType == 0) end = false;
+    }
+    if (end) return -1;
     return 0;
 }

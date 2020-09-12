@@ -77,9 +77,8 @@ void local_slave::read_data() {
             chessBoard->step(x, y, type);
             num_chess[type + 3]--;
             turns++;
-            refresh_board(chessBoard);
             chessBoard->offset(num_chess);
-            //refresh_board(chessBoard);
+            refresh_board(chessBoard);
             refresh_text();
             int reward = chessBoard->judge();
             if (reward == 1) {

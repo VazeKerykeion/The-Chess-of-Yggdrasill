@@ -22,8 +22,6 @@ signals:
 
     void showmain();
 
-    void t();
-
 private slots:
 
     void new_client();

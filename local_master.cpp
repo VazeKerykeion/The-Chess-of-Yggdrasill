@@ -32,7 +32,6 @@ local_master::local_master(QWidget *parent) :
     master_rps = 0;
     slave_rps = 0;
     this->setFixedSize(this->size());
-    connect(this, &local_master::t, this, &local_master::fresh);
 
 }
 
@@ -66,9 +65,7 @@ void local_master::read_data() {
                 turns++;
 
                 chessBoard->offset(num_chess);
-                //emit fresh();
                 refresh_board(chessBoard);
-                //refresh_board(chessBoard);
                 refresh_text();
                 int reward = chessBoard->judge();
                 if (reward == 1) {
