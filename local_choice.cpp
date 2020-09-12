@@ -6,6 +6,7 @@ local_choice::local_choice(QWidget *parent) :
     ui(new Ui::local_choice)
 {
     ui->setupUi(this);
+    this->setFixedSize(this->size());
 }
 
 local_choice::~local_choice()

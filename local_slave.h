@@ -28,6 +28,8 @@ public slots:
 
     void read_data();
 
+    void fresh();
+
     void on_chess1_clicked();
 
     void on_chess2_clicked();

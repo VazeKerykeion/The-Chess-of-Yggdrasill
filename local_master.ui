@@ -187,7 +187,6 @@
             </widget>
             <addaction name="menumenu"/>
         </widget>
-        <widget class="QStatusBar" name="statusbar"/>
         <action name="actionback">
             <property name="text">
                 <string>返回到主界面</string>

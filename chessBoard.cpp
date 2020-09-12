@@ -25,7 +25,7 @@ chessboard::chessboard() {
     board[1][4].chessType = -1;
     // D7,E8设置为青叶
     board[6][3].chessType = 1;
-    board[6][5].chessType = 1;
+    board[6][4].chessType = 1;
     num_Gray = 2;
     num_Green = 2;
 }
@@ -200,8 +200,9 @@ void chessboard::push(int x, int y, char dir, int camp) {
 
 void chessboard::offset(int *num_chess) {
     if (movedChess.empty()) return;
+    //QMessageBox::information(NULL,"","暂停一下");
     while (!movedChess.empty()) {
-
+        //QMessageBox::information(NULL,"","暂停一下");
         point t = movedChess.top();
         int start = -1, end = 0;
         for (int i = 0; i < 8; i++) {

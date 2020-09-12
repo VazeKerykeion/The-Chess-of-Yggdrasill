@@ -121,8 +121,13 @@ void single_play::initialize() {
 
 
             connect(cells[i][j], &cell_label::clicked, this, &single_play::cells_clicked);
+            connect(cells[i][j], &cell_label::fresh, this, &single_play::fresh);
         }
     }
+}
+
+void single_play::fresh() {
+    refresh_board(chessBoard);
 }
 
 void single_play::cells_clicked(int i, int j) {
@@ -142,19 +147,21 @@ void single_play::cells_clicked(int i, int j) {
         }
     }
     if (res) {
+        refresh_board(chessBoard);
         turns++;
         if (turns < 2) camp = -1;
         else if (turns >= 2 && turns < 4) camp = 1;
         else camp = -camp;
         /*
-        refresh_board(chessBoard);
+
         QString s=QString("暂停一下");
         QMessageBox::information(NULL,"",s);
-        pause();
+
         */
+        pause();
         chessBoard->offset(num_chess);
         //Sleep(1000);
-        refresh_board(chessBoard);
+        //refresh_board(chessBoard);
         refresh_text();
         int reward = chessBoard->judge();
         if (reward == 1) {

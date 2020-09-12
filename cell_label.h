@@ -16,9 +16,13 @@ public:
 protected:
     void mouseReleaseEvent(QMouseEvent *ev);
 
+    void mousePressEvent(QMouseEvent *ev);
+
 signals:
 
     void clicked(int i, int j);
+
+    void fresh();
 
 private:
     int i;

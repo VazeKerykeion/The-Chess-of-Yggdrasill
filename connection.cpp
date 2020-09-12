@@ -7,6 +7,7 @@ connection::connection(QWidget *parent) :
         QMainWindow(parent),
         ui(new Ui::connection) {
     ui->setupUi(this);
+    this->setFixedSize(this->size());
 }
 
 connection::~connection() {

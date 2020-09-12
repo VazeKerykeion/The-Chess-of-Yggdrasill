@@ -36,6 +36,8 @@ private slots:
 
     void on_green3_clicked();
 
+    void fresh();
+
     void cells_clicked(int i, int j);
 
 

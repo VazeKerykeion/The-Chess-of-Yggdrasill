@@ -31,6 +31,8 @@ local_master::local_master(QWidget *parent) :
     count_rps = 0;
     master_rps = 0;
     slave_rps = 0;
+    this->setFixedSize(this->size());
+    connect(this, &local_master::t, this, &local_master::fresh);
 
 }
 
@@ -62,8 +64,11 @@ void local_master::read_data() {
                 chessBoard->step(x, y, type);
                 num_chess[type + 3]--;
                 turns++;
+
                 chessBoard->offset(num_chess);
+                //emit fresh();
                 refresh_board(chessBoard);
+                //refresh_board(chessBoard);
                 refresh_text();
                 int reward = chessBoard->judge();
                 if (reward == 1) {
@@ -96,55 +101,6 @@ void local_master::read_data() {
             ui->chess3->setVisible(true);
             ui->chess2->setVisible(true);
         }
-    }
-}
-
-void local_master::on_chess1_clicked() {
-    if (wait == 1) {
-        count_rps++;
-        master_rps = 1;
-        ui->chess1->setEnabled(false);
-        ui->chess3->setEnabled(false);
-        ui->chess2->setEnabled(false);
-        if (count_rps == 2) {
-            first_second();
-        }
-    } else {
-        chesstype = 1;
-        ui->label_4->setPixmap(QPixmap(picname[chesstype * order + 3]));
-    }
-}
-
-void local_master::on_chess2_clicked() {
-    if (wait == 1) {
-        count_rps++;
-        master_rps = 2;
-        ui->chess1->setEnabled(false);
-        ui->chess3->setEnabled(false);
-        ui->chess2->setEnabled(false);
-        if (count_rps == 2) {
-            first_second();
-        }
-    } else {
-        chesstype = 2;
-        ui->label_4->setPixmap(QPixmap(picname[chesstype * order + 3]));
-
-    }
-}
-
-void local_master::on_chess3_clicked() {
-    if (wait == 1) {
-        count_rps++;
-        master_rps = 3;
-        ui->chess1->setEnabled(false);
-        ui->chess3->setEnabled(false);
-        ui->chess2->setEnabled(false);
-        if (count_rps == 2) {
-            first_second();
-        }
-    } else {
-        chesstype = 3;
-        ui->label_4->setPixmap(QPixmap(picname[chesstype * order + 3]));
     }
 }
 
@@ -260,6 +216,7 @@ void local_master::initialize(int order) {
 
 
             connect(cells[i][j], &cell_label::clicked, this, &local_master::cells_clicked);
+            connect(cells[i][j], &cell_label::fresh, this, &local_master::fresh);
 
         }
     }
@@ -285,6 +242,7 @@ void local_master::cells_clicked(int i, int j) {
         if (num_chess[chesstype * order + 3] > 0) {
             res = chessBoard->step(i, j, chesstype * order);
             if (res) {
+                refresh_board(chessBoard);
                 num_chess[chesstype * order + 3]--;
                 turns++;
                 QString data = QString("%1,%2,%3,").arg(i).arg(j).arg(chesstype * order);
@@ -301,7 +259,7 @@ void local_master::cells_clicked(int i, int j) {
                 wait = 3;
                 chessBoard->offset(num_chess);
 
-                refresh_board(chessBoard);
+                //refresh_board(chessBoard);
                 refresh_text();
                 int reward = chessBoard->judge();
                 if (reward == 1) {
@@ -322,18 +280,71 @@ void local_master::cells_clicked(int i, int j) {
     }
 }
 
-void local_master::refresh_text() {
-    ui->num_chess1->setText(QString::number(num_chess[1 * order + 3]));
-    ui->num_chess2->setText(QString::number(num_chess[2 * order + 3]));
-    ui->num_chess3->setText(QString::number(num_chess[3 * order + 3]));
-}
-
 void local_master::refresh_board(chessboard *chessBoard) {
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             cells[i][j]->setPixmap(QPixmap(picname[chessBoard->board[i][j].chessType + 3]).scaled(40, 40));
         }
     }
+}
+
+void local_master::refresh_text() {
+    ui->num_chess1->setText(QString::number(num_chess[1 * order + 3]));
+    ui->num_chess2->setText(QString::number(num_chess[2 * order + 3]));
+    ui->num_chess3->setText(QString::number(num_chess[3 * order + 3]));
+}
+
+void local_master::on_chess1_clicked() {
+    if (wait == 1) {
+        count_rps++;
+        master_rps = 1;
+        ui->chess1->setEnabled(false);
+        ui->chess3->setEnabled(false);
+        ui->chess2->setEnabled(false);
+        if (count_rps == 2) {
+            first_second();
+        }
+    } else {
+        chesstype = 1;
+        ui->label_4->setPixmap(QPixmap(picname[chesstype * order + 3]));
+    }
+}
+
+void local_master::on_chess2_clicked() {
+    if (wait == 1) {
+        count_rps++;
+        master_rps = 2;
+        ui->chess1->setEnabled(false);
+        ui->chess3->setEnabled(false);
+        ui->chess2->setEnabled(false);
+        if (count_rps == 2) {
+            first_second();
+        }
+    } else {
+        chesstype = 2;
+        ui->label_4->setPixmap(QPixmap(picname[chesstype * order + 3]));
+
+    }
+}
+
+void local_master::on_chess3_clicked() {
+    if (wait == 1) {
+        count_rps++;
+        master_rps = 3;
+        ui->chess1->setEnabled(false);
+        ui->chess3->setEnabled(false);
+        ui->chess2->setEnabled(false);
+        if (count_rps == 2) {
+            first_second();
+        }
+    } else {
+        chesstype = 3;
+        ui->label_4->setPixmap(QPixmap(picname[chesstype * order + 3]));
+    }
+}
+
+void local_master::fresh() {
+    refresh_board(chessBoard);
 }
 
 local_master::~local_master() {

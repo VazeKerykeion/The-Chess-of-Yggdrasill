@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(Hello)
+project(Chess)
 
 set(CMAKE_CXX_STANDARD 11)
 
@@ -9,7 +9,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
-set(CMAKE_PREFIX_PATH D:/Qt5.7.1/5.7/mingw53_32) #这里需要填入自己安装的路径
+set(CMAKE_PREFIX_PATH D:/QT/5.14/5.14.2/mingw73_64) #这里需要填入自己安装的路径
 
 find_package(Qt5 COMPONENTS Core Qml Quick Widgets DBus REQUIRED)
 find_package(Qt5Network)
@@ -23,8 +23,8 @@ set(SOURCE_FILES mainwindow.cpp local_choice.cpp connection.cpp cell_label.cpp s
 
 set(QRC_FILES pic.qrc)
 
-add_executable(Hello WIN32 ${HEAD_FILES} ${SOURCE_FILES} ${UI_FILES} ${QRC_FILES} main.cpp  chessBoard.cpp chessBoard.h  )
+add_executable(Chess WIN32 ${HEAD_FILES} ${SOURCE_FILES} ${UI_FILES} ${QRC_FILES} main.cpp chessBoard.cpp chessBoard.h)
 
-target_link_libraries(Hello Qt5::Widgets)
+target_link_libraries(Chess Qt5::Widgets)
 
-qt5_use_modules(Hello Core Widgets Gui Network)
+qt5_use_modules(Chess Core Widgets Gui Network)

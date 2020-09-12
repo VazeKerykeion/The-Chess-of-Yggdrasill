@@ -20,6 +20,7 @@ local_slave::local_slave(QWidget *parent) :
     ui->label_4->setVisible(false);
     picname = new QString[7]{":/pic/chess_-3.png", ":/pic/chess_-2.png", ":/pic/chess_-1.png", "", ":/pic/chess_1.png",
                              ":/pic/chess_2.png", ":/pic/chess_3.png"};
+    this->setFixedSize(this->size());
 
 }
 
@@ -76,8 +77,9 @@ void local_slave::read_data() {
             chessBoard->step(x, y, type);
             num_chess[type + 3]--;
             turns++;
-            chessBoard->offset(num_chess);
             refresh_board(chessBoard);
+            chessBoard->offset(num_chess);
+            //refresh_board(chessBoard);
             refresh_text();
             int reward = chessBoard->judge();
             if (reward == 1) {
@@ -189,6 +191,7 @@ void local_slave::cells_clicked(int i, int j) {
         if (num_chess[chesstype * order + 3] > 0) {
             res = chessBoard->step(i, j, chesstype * order);
             if (res) {
+                refresh_board(chessBoard);
                 num_chess[chesstype * order + 3]--;
                 turns++;
                 QString data = QString("%1,%2,%3,").arg(i).arg(j).arg(chesstype * order);
@@ -203,9 +206,10 @@ void local_slave::cells_clicked(int i, int j) {
                 chesstype = 1;
                 ui->label_4->setPixmap(QPixmap(picname[chesstype * order + 3]));
                 wait = 3;
+
                 chessBoard->offset(num_chess);
 
-                refresh_board(chessBoard);
+                //refresh_board(chessBoard);
                 refresh_text();
                 int reward = chessBoard->judge();
                 if (reward == 1) {
@@ -274,6 +278,10 @@ void local_slave::on_chess3_clicked() {
         chesstype = 3;
         ui->label_4->setPixmap(QPixmap(picname[chesstype * order + 3]));
     }
+}
+
+void local_slave::fresh() {
+    refresh_board(chessBoard);
 }
 
 local_slave::~local_slave() {

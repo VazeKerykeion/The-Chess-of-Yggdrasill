@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->localonline->setText(tr("局域网联机"));
     ui->online->setText(tr("服务器联机"));
     model = 0;
+    this->setFixedSize(this->size());
 
 
 }
@@ -41,6 +42,7 @@ void MainWindow::rec(int a){
 }
 
 void MainWindow::on_doubleplayer_clicked() {
+
     single = new single_play();
     connect(single, &single_play::showmain, this, &MainWindow::show);
     single->show();
