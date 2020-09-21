@@ -41,6 +41,12 @@ private slots:
 private:
     QVector<QVector<cell_label *>> cells;
 
+    QParallelAnimationGroup *animationGroup;
+
+    stack<pair<point, char>> movedChess;
+
+    void action(int order);
+
     void refresh_text();
 
     void first_second();

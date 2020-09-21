@@ -59,6 +59,7 @@ void single_play::refresh_board(chessboard *chessBoard) {
                     break;
             }
             cells[i][j]->move(81 + 40 * j, 64 + 40 * i);
+            cells[i][j]->raise();
         }
     }
 }
@@ -113,6 +114,7 @@ void single_play::initialize() {
             board[i][j]->setScaledContents(true);
             board[i][j]->move(81 + 40 * j, 64 + 40 * i);
             board[i][j]->setStyleSheet("border:1px solid black");
+
             cells[i][j] = new cell_label(this);
             cells[i][j]->set_point(i, j);
             cells[i][j]->setVisible(true);
@@ -120,7 +122,7 @@ void single_play::initialize() {
             cells[i][j]->setScaledContents(true);
             cells[i][j]->move(81 + 40 * j, 64 + 40 * i);
             //cells[i][j]->setStyleSheet("border:1px solid black");
-
+            board[i][j]->stackUnder(cells[i][j]);
             if (chessBoard->board[i][j].chessType == 1) {
                 cells[i][j]->setPixmap(QPixmap(":/pic/chess_1.png").scaled(40, 40));
             } else if (chessBoard->board[i][j].chessType == -1) {

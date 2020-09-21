@@ -32,6 +32,7 @@ local_master::local_master(QWidget *parent) :
     master_rps = 0;
     slave_rps = 0;
     this->setFixedSize(this->size());
+    animationGroup = new QParallelAnimationGroup(this);
 
 }
 
@@ -61,11 +62,13 @@ void local_master::read_data() {
                 int type = list[2].toInt();
                 int con = list[3].toInt();
                 chessBoard->step(x, y, type);
+                movedChess = chessBoard->get_movedChess();
                 num_chess[type + 3]--;
                 turns++;
-
+                cells[x][y]->setPixmap(QPixmap(picname[chessBoard->board[x][y].chessType + 3]).scaled(40, 40));
                 chessBoard->offset(num_chess);
-                refresh_board(chessBoard);
+                action(order);
+                //refresh_board(chessBoard);
                 refresh_text();
                 int reward = chessBoard->judge();
                 if (reward == 1) {
@@ -159,7 +162,7 @@ void local_master::initialize(int order) {
     turns = 0;
     QVector<QVector<cell_label *>> t(8, QVector<cell_label *>(8));
     cells = t;
-
+    QVector<QVector<QLabel *>> board(8, QVector<QLabel *>(8));
     num_chess = new int[7]{1, 1, 30, 0, 30, 1, 1};
 
 
@@ -187,8 +190,8 @@ void local_master::initialize(int order) {
                 temp->setStyleSheet("border:1px solid black");
                 temp->setScaledContents(true);
                 temp->setPixmap(QPixmap(":/pic/root_1.png").scaled(40, 40));
-                if (order == 1) temp->move(20 + 41 * j, 64 + 41 * i);
-                else temp->move(307 - 41 * j, 351 - 41 * i);
+                if (order == 1) temp->move(20 + 40 * j, 64 + 40 * i);
+                else temp->move(300 - 40 * j, 344 - 40 * i);
                 c++;
             } else if (chessBoard->board[i][j].root == -1) {
                 QLabel *temp = new QLabel(this);
@@ -197,23 +200,29 @@ void local_master::initialize(int order) {
                 temp->setStyleSheet("border:1px solid black");
                 temp->setScaledContents(true);
                 temp->setPixmap(QPixmap(":/pic/root_-1.png").scaled(40, 40));
-                if (order == 1) temp->move(20 + 41 * j, 64 + 41 * i);
-                else temp->move(307 - 41 * j, 351 - 41 * i);
+                if (order == 1) temp->move(20 + 40 * j, 64 + 40 * i);
+                else temp->move(300 - 40 * j, 344 - 40 * i);
             }
 
-            cell_label *cell = new cell_label(this);
-            cells[i][j] = cell;
+            board[i][j] = new QLabel(this);
+            board[i][j]->setVisible(true);
+            board[i][j]->setFixedSize(40, 40);
+            board[i][j]->setScaledContents(true);
+            board[i][j]->move(20 + 40 * j, 64 + 40 * i);
+            board[i][j]->setStyleSheet("border:1px solid black");
+
+            cells[i][j] = new cell_label(this);
             cells[i][j]->set_point(i, j);
             cells[i][j]->setVisible(true);
             cells[i][j]->setFixedSize(40, 40);
             cells[i][j]->setScaledContents(true);
-
-            cells[i][j]->setStyleSheet("border:1px solid black");
+            board[i][j]->stackUnder(cells[i][j]);
+            //cells[i][j]->setStyleSheet("border:1px solid black");
             cells[i][j]->setPixmap(QPixmap(picname[chessBoard->board[i][j].chessType + 3]).scaled(40, 40));
 
 
             connect(cells[i][j], &cell_label::clicked, this, &local_master::cells_clicked);
-            connect(cells[i][j], &cell_label::fresh, this, &local_master::fresh);
+            //connect(cells[i][j], &cell_label::fresh, this, &local_master::fresh);
 
         }
     }
@@ -221,13 +230,13 @@ void local_master::initialize(int order) {
     if (order == 1) {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                cells[i][j]->move(20 + 41 * j, 64 + 41 * i);
+                cells[i][j]->move(20 + 40 * j, 64 + 40 * i);
             }
         }
     } else {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                cells[i][j]->move(307 - 41 * j, 351 - 41 * i);
+                cells[i][j]->move(300 - 40 * j, 344 - 40 * i);
             }
         }
     }
@@ -239,7 +248,9 @@ void local_master::cells_clicked(int i, int j) {
         if (num_chess[chesstype * order + 3] > 0) {
             res = chessBoard->step(i, j, chesstype * order);
             if (res) {
-                refresh_board(chessBoard);
+                cells[i][j]->setPixmap(QPixmap(picname[chessBoard->board[i][j].chessType + 3]).scaled(40, 40));
+                movedChess = chessBoard->get_movedChess();
+                //refresh_board(chessBoard);
                 num_chess[chesstype * order + 3]--;
                 turns++;
                 QString data = QString("%1,%2,%3,").arg(i).arg(j).arg(chesstype * order);
@@ -255,7 +266,7 @@ void local_master::cells_clicked(int i, int j) {
                 ui->label_4->setPixmap(QPixmap(picname[chesstype * order + 3]));
                 wait = 3;
                 chessBoard->offset(num_chess);
-
+                action(order);
                 //refresh_board(chessBoard);
                 refresh_text();
                 int reward = chessBoard->judge();
@@ -277,10 +288,86 @@ void local_master::cells_clicked(int i, int j) {
     }
 }
 
+void local_master::action(int order) {
+    animationGroup->clear();
+    while (!movedChess.empty()) {
+        pair<point, char> t = movedChess.top();
+        if (t.second == ' ') {
+            movedChess.pop();
+            continue;
+        }
+        QPropertyAnimation *t_anima;
+        cell_label *movedLabel;
+        if (order == 1) {
+            switch (t.second) {
+                case 'w':
+                    t.second = 's';
+                    break;
+                case 's':
+                    t.second = 'w';
+                    break;
+                case 'a':
+                    t.second = 'd';
+                    break;
+                case 'd':
+                    t.second = 'a';
+                    break;
+            }
+        }
+        switch (t.second) {
+            case 'w':
+                movedLabel = cells[t.first.x + 1][t.first.y];
+                t_anima = new QPropertyAnimation(movedLabel, "pos");
+                t_anima->setDuration(500);
+                t_anima->setStartValue(QPoint(movedLabel->x(), movedLabel->y()));
+                t_anima->setEndValue(QPoint(movedLabel->x(), movedLabel->y() - 40));
+                break;
+            case 's':
+                movedLabel = cells[t.first.x - 1][t.first.y];
+                t_anima = new QPropertyAnimation(movedLabel, "pos");
+                t_anima->setDuration(500);
+                t_anima->setStartValue(QPoint(movedLabel->x(), movedLabel->y()));
+                t_anima->setEndValue(QPoint(movedLabel->x(), movedLabel->y() + 40));
+                break;
+            case 'a':
+                movedLabel = cells[t.first.x][t.first.y + 1];
+                t_anima = new QPropertyAnimation(movedLabel, "pos");
+                t_anima->setDuration(500);
+                t_anima->setStartValue(QPoint(movedLabel->x(), movedLabel->y()));
+                t_anima->setEndValue(QPoint(movedLabel->x() - 40, movedLabel->y()));
+                break;
+            case 'd':
+                movedLabel = cells[t.first.x][t.first.y - 1];
+                t_anima = new QPropertyAnimation(movedLabel, "pos");
+                t_anima->setDuration(500);
+                t_anima->setStartValue(QPoint(movedLabel->x(), movedLabel->y()));
+                t_anima->setEndValue(QPoint(movedLabel->x() + 40, movedLabel->y()));
+                break;
+            default:
+                break;
+        }
+
+        //QString s=QString("%1,%2").arg(x).arg(y);
+        //QMessageBox::information(NULL,"",s);
+
+        t_anima->setEasingCurve(QEasingCurve::InOutQuad);
+        //t_anima->start();
+        animationGroup->addAnimation(t_anima);
+        movedChess.pop();
+    }
+
+    animationGroup->start();
+    connect(animationGroup, &QPropertyAnimation::finished, this, &local_master::fresh);
+    //delete animationGroup;
+}
 void local_master::refresh_board(chessboard *chessBoard) {
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             cells[i][j]->setPixmap(QPixmap(picname[chessBoard->board[i][j].chessType + 3]).scaled(40, 40));
+
+            if (order == 1) cells[i][j]->move(20 + 40 * j, 64 + 40 * i);
+            else cells[i][j]->move(300 - 40 * j, 344 - 40 * i);
+            cells[i][j]->raise();
         }
     }
 }

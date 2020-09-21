@@ -118,7 +118,7 @@ void chessboard::push(int x, int y, char dir, int camp) {
         {
             case 'w'://上
                 //边界棋子无法被推动，因此判断条件为 0 < x1 < 7, 0 < y1 <8
-                while (x1 > 0) {
+                while (x1 >= 0) {
                     // t 为简化下方判断代码的临时变量，表示扫描位置的chessType
                     int t = board[x1][y1].chessType;
 
@@ -140,7 +140,7 @@ void chessboard::push(int x, int y, char dir, int camp) {
                 break;
 
             case 's'://下
-                while (x1 < 7) {
+                while (x1 <= 7) {
                     int t = board[x1][y1].chessType;
                     if (t * camp == -3 || t * camp > 0 || board[x1][y1].root * camp < 0) break;
                     else if (t * camp == 0) {
@@ -157,7 +157,7 @@ void chessboard::push(int x, int y, char dir, int camp) {
                 break;
 
             case 'a'://左
-                while (y1 > 0) {
+                while (y1 >= 0) {
                     int t = board[x1][y1].chessType;
                     if (t * camp == -3 || t * camp > 0 || board[x1][y1].root * camp < 0) break;
                     else if (t * camp == 0) {
@@ -174,7 +174,7 @@ void chessboard::push(int x, int y, char dir, int camp) {
                 break;
 
             case 'd'://右
-                while (y1 < 7) {
+                while (y1 <= 7) {
                     int t = board[x1][y1].chessType;
                     if (t * camp == -3 || t * camp > 0 || board[x1][y1].root * camp < 0) break;
                     else if (t * camp == 0) {
