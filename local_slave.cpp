@@ -167,16 +167,13 @@ void local_slave::initialize(int order) {
             cells[i][j]->setVisible(true);
             cells[i][j]->setFixedSize(40, 40);
             cells[i][j]->setScaledContents(true);
-            board[i][j]->stackUnder(cells[i][j]);
+
             //cells[i][j]->setStyleSheet("border:1px solid black");
-
-
             cells[i][j]->setPixmap(QPixmap(picname[chessBoard->board[i][j].chessType + 3]).scaled(40, 40));
-
+            board[i][j]->lower();
 
             connect(cells[i][j], &cell_label::clicked, this, &local_slave::cells_clicked);
             //connect(cells[i][j], &cell_label::fresh, this, &local_slave::fresh);
-
         }
     }
 
@@ -193,18 +190,19 @@ void local_slave::initialize(int order) {
             }
         }
     }
+
 }
 
 void local_slave::cells_clicked(int i, int j) {
-    QMessageBox::information(NULL, "", "点到了");
+    //QMessageBox::information(NULL, "", "点到了");
     if (wait == 2) {
-        QMessageBox::information(NULL, "", "回合正常");
+        //QMessageBox::information(NULL, "", "回合正常");
         bool res = false;
         if (num_chess[chesstype * order + 3] > 0) {
-            QMessageBox::information(NULL, "", "进入了棋盘");
+            //QMessageBox::information(NULL, "", "进入了棋盘");
             res = chessBoard->step(i, j, chesstype * order);
             if (res) {
-                QMessageBox::information(NULL, "", "落子成功");
+                //QMessageBox::information(NULL, "", "落子成功");
                 //refresh_board(chessBoard);
                 movedChess = chessBoard->get_movedChess();
                 num_chess[chesstype * order + 3]--;
@@ -222,9 +220,8 @@ void local_slave::cells_clicked(int i, int j) {
                 chesstype = 1;
                 ui->label_4->setPixmap(QPixmap(picname[chesstype * order + 3]));
                 wait = 3;
-
                 chessBoard->offset(num_chess);
-
+                action(order);
                 //refresh_board(chessBoard);
                 refresh_text();
                 int reward = chessBoard->judge();
@@ -250,7 +247,6 @@ void local_slave::refresh_board(chessboard *chessBoard) {
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             cells[i][j]->setPixmap(QPixmap(picname[chessBoard->board[i][j].chessType + 3]).scaled(40, 40));
-
             if (order == 1) cells[i][j]->move(20 + 40 * j, 64 + 40 * i);
             else cells[i][j]->move(300 - 40 * j, 344 - 40 * i);
             cells[i][j]->raise();
@@ -310,7 +306,7 @@ void local_slave::action(int order) {
         }
         QPropertyAnimation *t_anima;
         cell_label *movedLabel;
-        if (order == 1) {
+        if (order == -1) {
             switch (t.second) {
                 case 'w':
                     t.second = 's';
@@ -323,6 +319,8 @@ void local_slave::action(int order) {
                     break;
                 case 'd':
                     t.second = 'a';
+                    break;
+                default:
                     break;
             }
         }
@@ -358,9 +356,6 @@ void local_slave::action(int order) {
             default:
                 break;
         }
-
-        //QString s=QString("%1,%2").arg(x).arg(y);
-        //QMessageBox::information(NULL,"",s);
 
         t_anima->setEasingCurve(QEasingCurve::InOutQuad);
         //t_anima->start();
