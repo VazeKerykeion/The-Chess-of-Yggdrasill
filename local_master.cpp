@@ -264,6 +264,7 @@ void local_master::cells_clicked(int i, int j) {
                 ui->label_4->setPixmap(QPixmap(picname[chesstype * order + 3]));
                 wait = 3;
                 chessBoard->offset(num_chess);
+                //if(movedChess.size()>1) QMessageBox::information(NULL,"","播放动画");
                 action(order);
                 //refresh_board(chessBoard);
                 refresh_text();
@@ -362,52 +363,36 @@ void local_master::action(int order) {
         }
         QPropertyAnimation *t_anima;
         cell_label *movedLabel;
-        if (order == -1) {
-            switch (t.second) {
-                case 'w':
-                    t.second = 's';
-                    break;
-                case 's':
-                    t.second = 'w';
-                    break;
-                case 'a':
-                    t.second = 'd';
-                    break;
-                case 'd':
-                    t.second = 'a';
-                    break;
-                default:
-                    break;
-            }
-        }
+
+        int dir = 40 * order;
         switch (t.second) {
             case 'w':
                 movedLabel = cells[t.first.x + 1][t.first.y];
                 t_anima = new QPropertyAnimation(movedLabel, "pos");
                 t_anima->setDuration(500);
                 t_anima->setStartValue(QPoint(movedLabel->x(), movedLabel->y()));
-                t_anima->setEndValue(QPoint(movedLabel->x(), movedLabel->y() - 40));
+                t_anima->setEndValue(QPoint(movedLabel->x(), movedLabel->y() - dir));
                 break;
             case 's':
                 movedLabel = cells[t.first.x - 1][t.first.y];
                 t_anima = new QPropertyAnimation(movedLabel, "pos");
                 t_anima->setDuration(500);
                 t_anima->setStartValue(QPoint(movedLabel->x(), movedLabel->y()));
-                t_anima->setEndValue(QPoint(movedLabel->x(), movedLabel->y() + 40));
+                t_anima->setEndValue(QPoint(movedLabel->x(), movedLabel->y() + dir));
                 break;
             case 'a':
                 movedLabel = cells[t.first.x][t.first.y + 1];
                 t_anima = new QPropertyAnimation(movedLabel, "pos");
                 t_anima->setDuration(500);
                 t_anima->setStartValue(QPoint(movedLabel->x(), movedLabel->y()));
-                t_anima->setEndValue(QPoint(movedLabel->x() - 40, movedLabel->y()));
+                t_anima->setEndValue(QPoint(movedLabel->x() - dir, movedLabel->y()));
                 break;
             case 'd':
                 movedLabel = cells[t.first.x][t.first.y - 1];
                 t_anima = new QPropertyAnimation(movedLabel, "pos");
                 t_anima->setDuration(500);
                 t_anima->setStartValue(QPoint(movedLabel->x(), movedLabel->y()));
-                t_anima->setEndValue(QPoint(movedLabel->x() + 40, movedLabel->y()));
+                t_anima->setEndValue(QPoint(movedLabel->x() + dir, movedLabel->y()));
                 break;
             default:
                 break;

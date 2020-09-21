@@ -306,52 +306,35 @@ void local_slave::action(int order) {
         }
         QPropertyAnimation *t_anima;
         cell_label *movedLabel;
-        if (order == -1) {
-            switch (t.second) {
-                case 'w':
-                    t.second = 's';
-                    break;
-                case 's':
-                    t.second = 'w';
-                    break;
-                case 'a':
-                    t.second = 'd';
-                    break;
-                case 'd':
-                    t.second = 'a';
-                    break;
-                default:
-                    break;
-            }
-        }
+        int dir = 40 * order;
         switch (t.second) {
             case 'w':
                 movedLabel = cells[t.first.x + 1][t.first.y];
                 t_anima = new QPropertyAnimation(movedLabel, "pos");
                 t_anima->setDuration(500);
                 t_anima->setStartValue(QPoint(movedLabel->x(), movedLabel->y()));
-                t_anima->setEndValue(QPoint(movedLabel->x(), movedLabel->y() - 40));
+                t_anima->setEndValue(QPoint(movedLabel->x(), movedLabel->y() - dir));
                 break;
             case 's':
                 movedLabel = cells[t.first.x - 1][t.first.y];
                 t_anima = new QPropertyAnimation(movedLabel, "pos");
                 t_anima->setDuration(500);
                 t_anima->setStartValue(QPoint(movedLabel->x(), movedLabel->y()));
-                t_anima->setEndValue(QPoint(movedLabel->x(), movedLabel->y() + 40));
+                t_anima->setEndValue(QPoint(movedLabel->x(), movedLabel->y() + dir));
                 break;
             case 'a':
                 movedLabel = cells[t.first.x][t.first.y + 1];
                 t_anima = new QPropertyAnimation(movedLabel, "pos");
                 t_anima->setDuration(500);
                 t_anima->setStartValue(QPoint(movedLabel->x(), movedLabel->y()));
-                t_anima->setEndValue(QPoint(movedLabel->x() - 40, movedLabel->y()));
+                t_anima->setEndValue(QPoint(movedLabel->x() - dir, movedLabel->y()));
                 break;
             case 'd':
                 movedLabel = cells[t.first.x][t.first.y - 1];
                 t_anima = new QPropertyAnimation(movedLabel, "pos");
                 t_anima->setDuration(500);
                 t_anima->setStartValue(QPoint(movedLabel->x(), movedLabel->y()));
-                t_anima->setEndValue(QPoint(movedLabel->x() + 40, movedLabel->y()));
+                t_anima->setEndValue(QPoint(movedLabel->x() + dir, movedLabel->y()));
                 break;
             default:
                 break;
