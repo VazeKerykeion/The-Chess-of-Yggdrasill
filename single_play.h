@@ -3,9 +3,12 @@
 
 #include "chessBoard.h"
 #include <QMainWindow>
+#include <QPropertyAnimation>
+#include <QParallelAnimationGroup>
 #include "cell_label.h"
+
 namespace Ui {
-class single_play;
+    class single_play;
 }
 
 class single_play : public QMainWindow {
@@ -45,14 +48,17 @@ private:
     Ui::single_play *ui;
     chessboard *chessBoard;
     QVector<QVector<cell_label *>> cells;
+    QParallelAnimationGroup *animationGroup;
+    stack<pair<point, char>> movedChess;
 
     void refresh_text();
 
     void initialize();
 
+    void action();
+
     void step(int x, int y, int chesstype);
 
-    void pause();
 
     int turns;
     int *num_chess;

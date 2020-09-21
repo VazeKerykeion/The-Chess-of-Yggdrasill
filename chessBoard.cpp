@@ -57,12 +57,10 @@ bool chessboard::step(int x, int y, int chessType) {
     //只有当chesstype为空时，格子才为空
     if (board[x][y].root * chessType > 0 || board[x][y].chessType != 0)
         return false;
-
     int camp;
     //camp表示阵营，1为灰方，-1为青方
     if (chessType > 0) camp = 1;
     else camp = -1;
-
     //顺序扫描以落子点为中心的 5X3 的区域，如果存在友方对应棋子则可以攀附
     int raw[3] = { -1,0,1 };
     int col[5] = { -2,-1,0,1,2 };
@@ -83,16 +81,14 @@ bool chessboard::step(int x, int y, int chessType) {
             num_Gray++;
         else
             num_Green++;
-        board[x][y].chessType=chessType;
-        movedChess.push(point{x,y});
+        board[x][y].chessType = chessType;
+        movedChess.push(pair<point, char>(point{x, y}, ' '));
         //QString s=QString("成功落下的位置为（%1，%2），棋子为%3").arg(x).arg(y).arg(board[x][y].chessType);
         //QMessageBox::information(NULL,"",s);
         push(x - 1, y, 'w', camp);
         push(x + 1, y, 's', camp);
         push(x, y - 1, 'a', camp);
         push(x, y + 1, 'd', camp);
-
-
         return true;
     }
     else return false;
@@ -133,7 +129,7 @@ void chessboard::push(int x, int y, char dir, int camp) {
                     else if (t * camp == 0) {
                         while (x1 < x) {
                             board[x1][y1].chessType = board[x1 + 1][y1].chessType;
-                            movedChess.push(point{x1, y1});
+                            movedChess.push(pair<point, char>(point{x1, y1}, 'w'));
                             x1++;
                         }
                         board[x1][y1].chessType = 0;
@@ -150,7 +146,7 @@ void chessboard::push(int x, int y, char dir, int camp) {
                     else if (t * camp == 0) {
                         while (x1 > x) {
                             board[x1][y1].chessType = board[x1 - 1][y1].chessType;
-                            movedChess.push(point{x1, y1});
+                            movedChess.push(pair<point, char>(point{x1, y1}, 's'));
                             x1--;
                         }
                         board[x1][y1].chessType = 0;
@@ -167,7 +163,7 @@ void chessboard::push(int x, int y, char dir, int camp) {
                     else if (t * camp == 0) {
                         while (y1 < y) {
                             board[x1][y1].chessType = board[x1][y1 + 1].chessType;
-                            movedChess.push(point{x1, y1});
+                            movedChess.push(pair<point, char>(point{x1, y1}, 'a'));
                             y1++;
                         }
                         board[x1][y1].chessType = 0;
@@ -184,7 +180,7 @@ void chessboard::push(int x, int y, char dir, int camp) {
                     else if (t * camp == 0) {
                         while (y1 > y) {
                             board[x1][y1].chessType = board[x1][y1 - 1].chessType;
-                            movedChess.push(point{x1, y1});
+                            movedChess.push(pair<point, char>(point{x1, y1}, 'd'));
                             y1--;
                         }
                         board[x1][y1].chessType = 0;
@@ -203,8 +199,11 @@ void chessboard::offset(int *num_chess) {
     //QMessageBox::information(NULL,"","暂停一下");
     while (!movedChess.empty()) {
         //QMessageBox::information(NULL,"","暂停一下");
-        point t = movedChess.top();
-        if (board[t.x][t.y].root != 0) break;
+        point t = movedChess.top().first;
+        //if (board[t.x][t.y].root != 0){
+        //movedChess.pop();
+        //continue;
+        //}
         int start = -1, end = 0;
         for (int i = 0; i < 8; i++) {
             if (board[i][t.y].chessType * board[t.x][t.y].chessType > 0) {
@@ -212,14 +211,14 @@ void chessboard::offset(int *num_chess) {
                 else end = i;
 
             } else {
-                if( end-start+1 >= 3) {
+                if (end - start + 1 >= 3) {
                     for (int j = start; j <= end; j++) offsetChess.push(point{j, t.y});
                 }
                 start = -1;
                 end = 0;
             }
         }
-        if( start-end+1 >= 3) {
+        if (end - start + 1 >= 3) {
             for (int j = start; j <= end; j++) offsetChess.push(point{j, t.y});
         }
         start = -1;
@@ -237,8 +236,8 @@ void chessboard::offset(int *num_chess) {
                 end = 0;
             }
         }
-        if( start-end+1 >= 3) {
-            for (int j = start; j <= end; j++) offsetChess.push(point{t.x,j});
+        if (end - start + 1 >= 3) {
+            for (int j = start; j <= end; j++) offsetChess.push(point{t.x, j});
         }
         movedChess.pop();
     }
@@ -253,6 +252,10 @@ void chessboard::offset(int *num_chess) {
 
         offsetChess.pop();
     }
+}
+
+stack<pair<point, char>> chessboard::get_movedChess() {
+    return movedChess;
 }
 
 int chessboard::judge() {

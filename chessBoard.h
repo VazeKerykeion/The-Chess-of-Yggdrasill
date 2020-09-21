@@ -24,7 +24,7 @@ private:
     //青方剩余棋子数
     int num_Green;
     //回合数
-    stack<point> movedChess;
+    stack<pair<point, char>> movedChess;
     stack<point> offsetChess;
     //扫描周围是否有可以攀附的棋子,type参数为扫描方式，1为扫描周围的根或叶，2为扫描周围的枝，如果都没有则返回false
     bool scan_board(int x, int y, int camp, int type);
@@ -34,6 +34,8 @@ private:
 
 public:
     cell **board;
+
+    stack<pair<point, char>> get_movedChess();
 
     //棋盘初始化
     chessboard();

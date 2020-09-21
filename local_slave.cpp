@@ -165,6 +165,7 @@ void local_slave::initialize(int order) {
 
 
             connect(cells[i][j], &cell_label::clicked, this, &local_slave::cells_clicked);
+            connect(cells[i][j], &cell_label::fresh, this, &local_slave::fresh);
 
         }
     }
