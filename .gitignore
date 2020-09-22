@@ -7,6 +7,7 @@
 *.o
 *.obj
 /cmake-build-debug/
+/cmake-build-release/
 
 # Precompiled Headers
 *.gch
