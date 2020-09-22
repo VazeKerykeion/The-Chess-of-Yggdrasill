@@ -153,6 +153,32 @@
                     <string>对手回合</string>
                 </property>
             </widget>
+            <widget class="QLabel" name="slave">
+                <property name="geometry">
+                    <rect>
+                        <x>150</x>
+                        <y>460</y>
+                        <width>120</width>
+                        <height>120</height>
+                    </rect>
+                </property>
+                <property name="text">
+                    <string/>
+                </property>
+            </widget>
+            <widget class="QLabel" name="master">
+                <property name="geometry">
+                    <rect>
+                        <x>150</x>
+                        <y>0</y>
+                        <width>120</width>
+                        <height>120</height>
+                    </rect>
+                </property>
+                <property name="text">
+                    <string/>
+                </property>
+            </widget>
         </widget>
         <widget class="QMenuBar" name="menubar">
             <property name="geometry">

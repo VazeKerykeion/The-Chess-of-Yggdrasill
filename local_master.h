@@ -49,6 +49,8 @@ private:
 
     void refresh_text();
 
+    void finger_guess_animation();
+
     void first_second();
 
     void refresh_board(chessboard *chessBoard);

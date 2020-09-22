@@ -51,6 +51,8 @@ private:
 
     void refresh_board(chessboard *chessBoard);
 
+    void finger_guess_animation(QString data);
+
     Ui::local_slave *ui;
     QTcpSocket *tcpSocket;
     chessboard *chessBoard;
@@ -60,6 +62,8 @@ private:
     int order;
     int *num_chess;
     int chesstype;
+    int master_rps;
+    int slave_rps;
 };
 
 #endif // LOCAL_SLAVE_H

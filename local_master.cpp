@@ -23,6 +23,8 @@ local_master::local_master(QWidget *parent) :
     ui->num_chess1->setVisible(false);
     ui->num_chess2->setVisible(false);
     ui->num_chess3->setVisible(false);
+    ui->master->setVisible(false);
+    ui->slave->setVisible(false);
     ui->label_2->setText("");
     ui->label_3->setVisible(false);
     ui->label_4->setVisible(false);
@@ -31,6 +33,7 @@ local_master::local_master(QWidget *parent) :
     count_rps = 0;
     master_rps = 0;
     slave_rps = 0;
+    order = 0;
     this->setFixedSize(this->size());
     animationGroup = new QParallelAnimationGroup(this);
 
@@ -107,6 +110,7 @@ void local_master::read_data() {
 void local_master::first_second() {
 
     if (master_rps == slave_rps) {
+        finger_guess_animation();
         master_rps = 0;
         slave_rps = 0;
         count_rps = 0;
@@ -129,33 +133,64 @@ void local_master::first_second() {
             tcpSocket->write("first");
         }
         //QMessageBox::information(NULL,"提示","失败，后手");
-
-        ui->chess1->setText("");
-        ui->chess3->setText("");
-        ui->chess2->setText("");
-        ui->chess1->setEnabled(true);
-        ui->chess3->setEnabled(true);
-        ui->chess2->setEnabled(true);
-        ui->num_chess1->setVisible(true);
-        ui->num_chess2->setVisible(true);
-        ui->num_chess3->setVisible(true);
-        ui->label_3->setVisible(true);
-        ui->label_4->setVisible(true);
-        chesstype = 1;
-        ui->label_4->setPixmap(QPixmap(picname[chesstype * order + 3]));
-        if (order == -1) {
-            wait = 2;
-            ui->label_2->setText("你的回合");
-        } else {
-            wait = 3;
-            ui->label_2->setText("对手回合");
-        }
-        initialize(order);
-
+        finger_guess_animation();
     }
 }
 
+void local_master::finger_guess_animation() {
+    ui->master->setVisible(true);
+    ui->master->setPixmap(QString(":/pic/f%1.jpg").arg(master_rps));
+    ui->slave->setVisible(true);
+    ui->slave->setPixmap(QString(":/pic/f%1.jpg").arg(slave_rps));
+    QPropertyAnimation *t1 = new QPropertyAnimation(ui->master, "pos");
+    QPropertyAnimation *t2 = new QPropertyAnimation(ui->slave, "pos");
+    t1->setCurrentTime(4000);
+    t1->setStartValue(QPoint(150, 460));
+    t1->setEndValue(QPoint(150, 330));
+    t1->setEasingCurve(QEasingCurve::InOutQuad);
+    t2->setCurrentTime(4000);
+    t2->setStartValue(QPoint(150, 0));
+    t2->setEndValue(QPoint(150, 130));
+    t2->setEasingCurve(QEasingCurve::InOutQuad);
+    QParallelAnimationGroup *animationGroup1 = new QParallelAnimationGroup(this);
+    animationGroup1->addAnimation(t1);
+    animationGroup1->addAnimation(t2);
+    animationGroup1->start();
+    connect(animationGroup1, &QParallelAnimationGroup::finished, [=] {
+        QTimer *timer = new QTimer(this);
+        connect(timer, &QTimer::timeout, [=] {
+            ui->master->setVisible(false);
+            ui->slave->setVisible(false);
+            if (order != 0) initialize(order);
+        });
+        timer->setSingleShot(true);
+        timer->start(500);
+    });
+}
+
 void local_master::initialize(int order) {
+
+    ui->chess1->setText("");
+    ui->chess3->setText("");
+    ui->chess2->setText("");
+    ui->chess1->setEnabled(true);
+    ui->chess3->setEnabled(true);
+    ui->chess2->setEnabled(true);
+    ui->num_chess1->setVisible(true);
+    ui->num_chess2->setVisible(true);
+    ui->num_chess3->setVisible(true);
+    ui->label_3->setVisible(true);
+    ui->label_4->setVisible(true);
+    chesstype = 1;
+    ui->label_4->setPixmap(QPixmap(picname[chesstype * order + 3]));
+    if (order == -1) {
+        wait = 2;
+        ui->label_2->setText("你的回合");
+    } else {
+        wait = 3;
+        ui->label_2->setText("对手回合");
+    }
+
     chessBoard = new chessboard();
     turns = 0;
     QVector<QVector<cell_label *>> t(8, QVector<cell_label *>(8));
@@ -399,7 +434,6 @@ void local_master::action(int order) {
         }
 
         t_anima->setEasingCurve(QEasingCurve::InOutQuad);
-        //t_anima->start();
         animationGroup->addAnimation(t_anima);
         movedChess.pop();
     }

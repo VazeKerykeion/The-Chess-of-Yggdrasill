@@ -15,12 +15,16 @@ local_slave::local_slave(QWidget *parent) :
     ui->num_chess1->setVisible(false);
     ui->num_chess2->setVisible(false);
     ui->num_chess3->setVisible(false);
+    ui->master->setVisible(false);
+    ui->slave->setVisible(false);
     ui->label_2->setText("");
     ui->label_3->setVisible(false);
     ui->label_4->setVisible(false);
     picname = new QString[7]{":/pic/chess_-3.png", ":/pic/chess_-2.png", ":/pic/chess_-1.png", "", ":/pic/chess_1.png",
                              ":/pic/chess_2.png", ":/pic/chess_3.png"};
     this->setFixedSize(this->size());
+    slave_rps = 0;
+    master_rps = 0;
     animationGroup = new QParallelAnimationGroup(this);
 
 }
@@ -35,34 +39,19 @@ void local_slave::read_data() {
     if (wait == 1) {
         //QMessageBox::information(NULL,"提示",data);
         if (data == "rerps" || data == "first" || data == "second") {
-            ui->chess1->setEnabled(true);
-            ui->chess3->setEnabled(true);
-            ui->chess2->setEnabled(true);
+
             if (data != "rerps") {
                 if (data == "first")
                     order = -1;
                 else if (data == "second")
                     order = 1;
 
-                ui->chess1->setText("");
-                ui->chess3->setText("");
-                ui->chess2->setText("");
-                ui->num_chess1->setVisible(true);
-                ui->num_chess2->setVisible(true);
-                ui->num_chess3->setVisible(true);
-                ui->label_3->setVisible(true);
-                ui->label_4->setVisible(true);
-                chesstype = 1;
-                ui->label_4->setPixmap(QPixmap(picname[chesstype * order + 3]));
-                if (order == -1) {
-                    wait = 2;
-                    ui->label_2->setText("你的回合");
-                } else {
-                    wait = 3;
-                    ui->label_2->setText("对手回合");
-                }
-                initialize(order);
+                //initialize(order);
             }
+            finger_guess_animation(data);
+            ui->chess1->setEnabled(true);
+            ui->chess3->setEnabled(true);
+            ui->chess2->setEnabled(true);
         } else {
             QMessageBox::information(NULL, "提示", "客机有点问题");
         }
@@ -108,14 +97,73 @@ void local_slave::read_data() {
     }
 }
 
+void local_slave::finger_guess_animation(QString data) {
+    if (data == "rerps")
+        master_rps = slave_rps;
+    else if (data == "first") {
+        master_rps = slave_rps + 1;
+        if (master_rps == 4) master_rps = 1;
+    } else {
+        master_rps = slave_rps - 1;
+        if (master_rps == 0) master_rps = 3;
+    }
+    ui->master->setVisible(true);
+    ui->master->setPixmap(QString(":/pic/f%1.jpg").arg(master_rps));
+    ui->slave->setVisible(true);
+    ui->slave->setPixmap(QString(":/pic/f%1.jpg").arg(slave_rps));
+    QPropertyAnimation *t1 = new QPropertyAnimation(ui->slave, "pos");
+    QPropertyAnimation *t2 = new QPropertyAnimation(ui->master, "pos");
+    t1->setCurrentTime(4000);
+    t1->setStartValue(QPoint(150, 460));
+    t1->setEndValue(QPoint(150, 330));
+    t1->setEasingCurve(QEasingCurve::InOutQuad);
+    t2->setCurrentTime(4000);
+    t2->setStartValue(QPoint(150, 0));
+    t2->setEndValue(QPoint(150, 130));
+    t2->setEasingCurve(QEasingCurve::InOutQuad);
+    QParallelAnimationGroup *animationGroup1 = new QParallelAnimationGroup(this);
+    animationGroup1->addAnimation(t1);
+    animationGroup1->addAnimation(t2);
+    animationGroup1->start();
+    connect(animationGroup1, &QParallelAnimationGroup::finished, [=] {
+        QTimer *timer = new QTimer(this);
+        connect(timer, &QTimer::timeout, [=] {
+            ui->master->setVisible(false);
+            ui->slave->setVisible(false);
+            if (order != 0) initialize(order);
+        });
+        timer->setSingleShot(true);
+        timer->start(500);
+    });
+
+
+}
+
 void local_slave::initialize(int order) {
+    ui->chess1->setText("");
+    ui->chess3->setText("");
+    ui->chess2->setText("");
+    ui->num_chess1->setVisible(true);
+    ui->num_chess2->setVisible(true);
+    ui->num_chess3->setVisible(true);
+    ui->label_3->setVisible(true);
+    ui->label_4->setVisible(true);
+    chesstype = 1;
+    ui->label_4->setPixmap(QPixmap(picname[chesstype * order + 3]));
+    if (order == -1) {
+        wait = 2;
+        ui->label_2->setText("你的回合");
+    } else {
+        wait = 3;
+        ui->label_2->setText("对手回合");
+    }
+
     chessBoard = new chessboard();
     turns = 0;
     QVector<QVector<cell_label *>> t(8, QVector<cell_label *>(8));
     cells = t;
     QVector<QVector<QLabel *>> board(8, QVector<QLabel *>(8));
     num_chess = new int[7]{1, 1, 30, 0, 30, 1, 1};
-    chesstype = 1;
 
 
     ui->chess1->setIconSize(QSize(40, 40));
@@ -266,6 +314,7 @@ void local_slave::on_chess1_clicked() {
         ui->chess1->setEnabled(false);
         ui->chess3->setEnabled(false);
         ui->chess2->setEnabled(false);
+        slave_rps = 1;
     } else {
         chesstype = 1;
         ui->label_4->setPixmap(QPixmap(picname[chesstype * order + 3]));
@@ -278,6 +327,7 @@ void local_slave::on_chess2_clicked() {
         ui->chess1->setEnabled(false);
         ui->chess3->setEnabled(false);
         ui->chess2->setEnabled(false);
+        slave_rps = 2;
     } else {
         chesstype = 2;
         ui->label_4->setPixmap(QPixmap(picname[chesstype * order + 3]));
@@ -290,6 +340,7 @@ void local_slave::on_chess3_clicked() {
         ui->chess1->setEnabled(false);
         ui->chess3->setEnabled(false);
         ui->chess2->setEnabled(false);
+        slave_rps = 3;
     } else {
         chesstype = 3;
         ui->label_4->setPixmap(QPixmap(picname[chesstype * order + 3]));
