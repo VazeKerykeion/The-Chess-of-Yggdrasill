@@ -5,6 +5,7 @@
 #ifndef HELLO_CHESSBOARD_H
 #define HELLO_CHESSBOARD_H
 #include <stack>
+#include "replay.h"
 using namespace std;
 struct cell{
     //棋子类型，1 2 3为三种棋子种类，正负表示阵营,正为灰方，负为青方；
@@ -31,6 +32,8 @@ private:
 
     //落子成功后推动周围棋子
     void push(int x, int y, char dir, int camp);
+
+    replay* record;
 
 public:
     cell **board;

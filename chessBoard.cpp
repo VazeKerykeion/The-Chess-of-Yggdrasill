@@ -28,10 +28,12 @@ chessboard::chessboard() {
     board[6][4].chessType = 1;
     num_Gray = 2;
     num_Green = 2;
+    record=new replay();
 }
 
 chessboard::~chessboard(){
-
+    delete [] board;
+    delete record;
 }
 
 bool chessboard::scan_board(int x, int y, int camp, int type) {
@@ -77,6 +79,7 @@ bool chessboard::step(int x, int y, int chessType) {
         if (res) break;
     }
     if (res) {
+        record->insert(x,y,chessType);
         if (chessType < 0)
             num_Gray++;
         else

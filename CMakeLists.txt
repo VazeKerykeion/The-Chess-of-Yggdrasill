@@ -17,13 +17,13 @@ find_package(Qt5Network)
 
 set(UI_FILES connection.ui local_choice.ui mainwindow.ui single_play.ui local_master.ui local_slave.ui)
 
-set(HEAD_FILES mainwindow.h local_choice.h connection.h cell_label.h single_play.h local_master.h local_slave.h)
+set(HEAD_FILES mainwindow.h local_choice.h connection.h cell_label.h single_play.h local_master.h local_slave.h )
 
 set(SOURCE_FILES mainwindow.cpp local_choice.cpp connection.cpp cell_label.cpp single_play.cpp local_master.cpp local_slave.cpp)
 
 set(QRC_FILES pic.qrc)
 
-add_executable(Chess WIN32 ${HEAD_FILES} ${SOURCE_FILES} ${UI_FILES} ${QRC_FILES} main.cpp chessBoard.cpp chessBoard.h)
+add_executable(Chess WIN32 ${HEAD_FILES} ${SOURCE_FILES} ${UI_FILES} ${QRC_FILES} main.cpp chessBoard.cpp chessBoard.h replay.cpp replay.h)
 
 target_link_libraries(Chess Qt5::Widgets)
 

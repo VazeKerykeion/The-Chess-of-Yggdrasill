@@ -17,7 +17,7 @@ single_play::single_play(QWidget *parent) :
         delete this;
     });
     //this->setStyleSheet("#single_play {background-color: rgb(255, 255, 255)}");
-    //ui->label->setPixmap(QPixmap(":/pic/chessboard.png"));
+
     this->setFixedSize(this->size());
     animationGroup = new QParallelAnimationGroup(this);
     initialize();
